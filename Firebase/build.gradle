@@ -15,22 +15,21 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId 'de.greenrobot.performance.couchbase'
-        // Couchbase requires at least SDK level 9
-        minSdkVersion 9
+        applicationId 'de.greenrobot.performance.firebase'
+        minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
     }
 
     packagingOptions {
-        exclude 'META-INF/ASL2.0'
         exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
         exclude 'META-INF/NOTICE'
     }
 }
 
 dependencies {
-    androidTestCompile project(':PerformanceTests:Common')
-    androidTestCompile 'com.couchbase.lite:couchbase-lite-android:1.1.0'
+    androidTestCompile project(':Common')
+    androidTestCompile 'com.firebase:firebase-client-android:2.3.1'
 }

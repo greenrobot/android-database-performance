@@ -15,7 +15,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId 'de.greenrobot.performance.sqlite'
+        applicationId 'de.greenrobot.performance.cupboard'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
@@ -24,5 +24,6 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':PerformanceTests:Common')
+    androidTestCompile project(':Common')
+    androidTestCompile 'nl.qbusict:cupboard:2.1.2'
 }

@@ -10,25 +10,27 @@ buildscript {
 
 apply plugin: 'com.android.application'
 
-repositories {
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-}
-
 android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId 'de.greenrobot.performance.activeandroid'
-        minSdkVersion rootProject.ext.minSdkVersion
+        applicationId 'de.greenrobot.performance.couchbase'
+        // Couchbase requires at least SDK level 9
+        minSdkVersion 9
         targetSdkVersion rootProject.ext.targetSdkVersion
 
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
     }
+
+    packagingOptions {
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
 }
 
 dependencies {
-    androidTestCompile project(':PerformanceTests:Common')
-    androidTestCompile 'com.android.support:support-v4:23.0.1'
-    androidTestCompile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
+    androidTestCompile project(':Common')
+    androidTestCompile 'com.couchbase.lite:couchbase-lite-android:1.1.0'
 }

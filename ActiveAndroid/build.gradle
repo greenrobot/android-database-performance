@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
 
     dependencies {
@@ -10,20 +10,25 @@ buildscript {
 
 apply plugin: 'com.android.application'
 
+repositories {
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
 android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "de.greenrobot.performance.ormlite"
+        applicationId 'de.greenrobot.performance.activeandroid'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
-        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
     }
 }
 
 dependencies {
-    androidTestCompile project(':PerformanceTests:Common')
-    androidTestCompile 'com.j256.ormlite:ormlite-android:4.48'
+    androidTestCompile project(':Common')
+    androidTestCompile 'com.android.support:support-v4:23.0.1'
+    androidTestCompile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
 }

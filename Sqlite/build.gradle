@@ -15,7 +15,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId 'de.greenrobot.performance.realm'
+        applicationId 'de.greenrobot.performance.sqlite'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
@@ -24,6 +24,5 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':PerformanceTests:Common')
-    androidTestCompile 'io.realm:realm-android:0.82.2'
+    androidTestCompile project(':Common')
 }

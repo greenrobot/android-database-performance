@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -15,15 +15,15 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId 'de.greenrobot.performance.cupboard'
+        applicationId "de.greenrobot.performance.ormlite"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
-        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
 }
 
 dependencies {
-    androidTestCompile project(':PerformanceTests:Common')
-    androidTestCompile 'nl.qbusict:cupboard:2.1.2'
+    androidTestCompile project(':Common')
+    androidTestCompile 'com.j256.ormlite:ormlite-android:4.48'
 }

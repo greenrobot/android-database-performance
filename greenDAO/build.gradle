@@ -12,10 +12,7 @@ apply plugin: 'com.android.application'
 
 dependencies {
     androidTestCompile 'de.greenrobot:greendao:2.0.0'
-    androidTestCompile project(':PerformanceTests:Common')
-
-    testCompile 'de.greenrobot:greendao:2.0.0'
-    testCompile 'org.robolectric:robolectric:3.0'
+    androidTestCompile project(':Common')
 }
 
 android {
