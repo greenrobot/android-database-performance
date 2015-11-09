@@ -10,14 +10,17 @@ buildscript {
 
 apply plugin: 'com.android.application'
 
-dependencies {
-    androidTestCompile 'de.greenrobot:greendao:2.0.0'
-    androidTestCompile project(':Common')
-}
-
 android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        testApplicationId "de.greenrobot.daotest"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+    }
 
     sourceSets {
         main {
@@ -35,9 +38,9 @@ android {
             java.srcDirs = ['src-unit-test']
         }
     }
+}
 
-    defaultConfig {
-        testApplicationId "de.greenrobot.daotest"
-        testInstrumentationRunner "android.test.InstrumentationTestRunner"
-    }
+dependencies {
+    androidTestCompile project(':Common')
+    androidTestCompile 'de.greenrobot:greendao:2.0.0'
 }

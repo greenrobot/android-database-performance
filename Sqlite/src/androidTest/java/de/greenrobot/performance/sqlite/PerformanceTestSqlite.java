@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.StringGenerator;
+import de.greenrobot.performance.Tools.LogMessage;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,10 +77,10 @@ public class PerformanceTestSqlite extends BasePerfTestCase {
         log("Inserted entities.");
 
         // query for entities by indexed string at random
-        int[] randomIndices = StringGenerator.getFixedRandomIndices(QUERY_COUNT, count - 1);
+        int[] randomIndices = StringGenerator.getFixedRandomIndices(getQueryCount(), count - 1);
 
         startClock();
-        for (int i = 0; i < QUERY_COUNT; i++) {
+        for (int i = 0; i < getQueryCount(); i++) {
             int nextIndex = randomIndices[i];
 
             Cursor query = database.query(DbHelper.Tables.INDEXED_ENTITY,

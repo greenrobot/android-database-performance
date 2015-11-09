@@ -2,7 +2,7 @@ package de.greenrobot.performance;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
-import android.util.Log;
+import de.greenrobot.performance.Tools.LogMessage;
 import de.greenrobot.performance.common.BuildConfig;
 
 /**
@@ -13,19 +13,23 @@ import de.greenrobot.performance.common.BuildConfig;
  */
 public abstract class BasePerfTestCase extends ApplicationTestCase<Application> {
 
-    protected static final int QUERY_COUNT = 1000;
     protected static final int RUNS = 8;
-    private static final int BATCH_SIZE = 10000;
-
-    private long start;
+    protected final Tools tools;
 
     public BasePerfTestCase() {
         super(Application.class);
+        this.tools = new Tools(getLogTag(), getBatchSize(), getQueryCount());
     }
 
     protected int getBatchSize() {
-        return BATCH_SIZE;
+        return Tools.DEFAULT_BATCH_SIZE;
     }
+
+    protected int getQueryCount() {
+        return Tools.DEFAULT_QUERY_COUNT;
+    }
+
+    protected abstract String getLogTag();
 
     @Override
     protected void setUp() throws Exception {
@@ -34,76 +38,28 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
         createApplication();
     }
 
-    protected void startClock() {
-        if (start != 0) {
-            throw new IllegalStateException("Call stopClock before starting it again.");
-        }
-        start = System.currentTimeMillis();
-    }
-
-    protected void stopClock(LogMessage type) {
-        long time = System.currentTimeMillis() - start;
-        start = 0;
-
-        String message = null;
-        if (type == LogMessage.QUERY_INDEXED) {
-            message = "Queried for " + QUERY_COUNT + " of " + getBatchSize()
-                    + " indexed entities in "
-                    + time + " ms.";
-        } else if (type == LogMessage.BATCH_CREATE) {
-            message = "Created (batch) " + getBatchSize() + " entities in " + time + " ms";
-        } else if (type == LogMessage.BATCH_UPDATE) {
-            message = "Updated (batch) " + getBatchSize() + " entities in " + time + " ms";
-        } else if (type == LogMessage.BATCH_READ) {
-            message = "Read (batch) " + getBatchSize() + " entities in " + time + " ms";
-        } else if (type == LogMessage.BATCH_ACCESS) {
-            message = "Accessed properties of " + getBatchSize() + " entities in " + time + " ms";
-        } else if (type == LogMessage.ONE_BY_ONE_CREATE) {
-            message = "Inserted (one-by-one) " + getBatchSize() / 10 + " entities in " + time
-                    + " ms";
-        } else if (type == LogMessage.ONE_BY_ONE_UPDATE) {
-            message = "Updated (one-by-one) " + getBatchSize() / 10 + " entities in " + time
-                    + " ms";
-        } else if (type == LogMessage.BATCH_DELETE) {
-            message = "Deleted (batch) all entities in " + time + " ms";
-        }
-
-        if (message != null) {
-            log(message);
-        }
-    }
-
-    /**
-     * Convenience method to create a debug log message.
-     */
-    protected void log(String message) {
-        Log.d(getLogTag(), message);
-    }
-
-    protected abstract String getLogTag();
-
     public void testIndexedStringEntityQueries() throws Exception {
         //noinspection PointlessBooleanExpression
         if (!BuildConfig.RUN_PERFORMANCE_TESTS) {
-            Log.d(getLogTag(), "Performance tests are disabled.");
+            log("Performance tests are disabled.");
             return;
         }
 
-        Log.d(getLogTag(), "--------Indexed Queries: Start");
+        log("--------Indexed Queries: Start");
         doIndexedStringEntityQueries();
-        Log.d(getLogTag(), "--------Indexed Queries: End");
+        log("--------Indexed Queries: End");
     }
 
     public void testSingleAndBatchCrud() throws Exception {
         //noinspection PointlessBooleanExpression
         if (!BuildConfig.RUN_PERFORMANCE_TESTS) {
-            Log.d(getLogTag(), "Performance tests are disabled.");
+            log("Performance tests are disabled.");
             return;
         }
 
-        Log.d(getLogTag(), "--------One-by-one/Batch CRUD: Start");
+        log("--------One-by-one/Batch CRUD: Start");
         doOneByOneAndBatchCrud();
-        Log.d(getLogTag(), "--------One-by-one/Batch CRUD: End");
+        log("--------One-by-one/Batch CRUD: End");
     }
 
     /**
@@ -119,14 +75,18 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
      */
     protected abstract void doOneByOneAndBatchCrud() throws Exception;
 
-    public enum LogMessage {
-        BATCH_CREATE,
-        BATCH_UPDATE,
-        BATCH_READ,
-        BATCH_ACCESS,
-        ONE_BY_ONE_CREATE,
-        ONE_BY_ONE_UPDATE,
-        BATCH_DELETE,
-        QUERY_INDEXED
+    protected void startClock() {
+        tools.startClock();
+    }
+
+    protected void stopClock(LogMessage type) {
+        tools.stopClock(type);
+    }
+
+    /**
+     * Convenience method to create a debug log message.
+     */
+    protected void log(String message) {
+        tools.log(message);
     }
 }

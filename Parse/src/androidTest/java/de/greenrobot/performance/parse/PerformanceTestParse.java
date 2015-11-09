@@ -8,6 +8,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.StringGenerator;
+import de.greenrobot.performance.Tools.LogMessage;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -13,6 +13,7 @@ import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.StringGenerator;
+import de.greenrobot.performance.Tools.LogMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,10 +92,10 @@ public class PerformanceTestCouchbase extends BasePerfTestCase {
         log("Built and inserted entities.");
 
         // query for entities by indexed string at random
-        int[] randomIndices = StringGenerator.getFixedRandomIndices(QUERY_COUNT, count - 1);
+        int[] randomIndices = StringGenerator.getFixedRandomIndices(getQueryCount(), count - 1);
 
         startClock();
-        for (int i = 0; i < QUERY_COUNT; i++) {
+        for (int i = 0; i < getQueryCount(); i++) {
             int nextIndex = randomIndices[i];
             List<Object> keyToQuery = new ArrayList<>(1);
             keyToQuery.add(fixedRandomStrings[nextIndex]);
