@@ -8,6 +8,7 @@ import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.StringGenerator;
+import de.greenrobot.performance.Tools.LogMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -21,16 +22,18 @@ import java.util.concurrent.TimeUnit;
  */
 public class PerformanceTestFirebase extends BasePerfTestCase {
 
-    // reduced query count as local datastore can not be indexed, resulting in low performance
-    private static final int QUERY_COUNT = 100;
-
     private Firebase rootFirebaseRef;
-
     private List<SimpleEntityNotNull> reloaded;
 
     @Override
     protected String getLogTag() {
         return "PerfTestFirebase";
+    }
+
+    @Override
+    protected int getQueryCount() {
+        // reduced query count as local datastore can not be indexed, resulting in low performance
+        return 100;
     }
 
     @Override
@@ -92,10 +95,10 @@ public class PerformanceTestFirebase extends BasePerfTestCase {
         log("Inserted entities.");
 
         // query for entities by indexed string at random
-        int[] randomIndices = StringGenerator.getFixedRandomIndices(QUERY_COUNT, count - 1);
+        int[] randomIndices = StringGenerator.getFixedRandomIndices(getQueryCount(), count - 1);
 
         startClock();
-        for (int i = 0; i < QUERY_COUNT; i++) {
+        for (int i = 0; i < getQueryCount(); i++) {
             int nextIndex = randomIndices[i];
 
             final CountDownLatch queryLock = new CountDownLatch(1);

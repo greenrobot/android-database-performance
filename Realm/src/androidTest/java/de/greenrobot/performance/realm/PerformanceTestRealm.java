@@ -2,6 +2,7 @@ package de.greenrobot.performance.realm;
 
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.StringGenerator;
+import de.greenrobot.performance.Tools.LogMessage;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmQuery;
@@ -85,10 +86,10 @@ public class PerformanceTestRealm extends BasePerfTestCase {
         log("Inserted entities.");
 
         // query for entities by indexed string at random
-        int[] randomIndices = StringGenerator.getFixedRandomIndices(QUERY_COUNT, count - 1);
+        int[] randomIndices = StringGenerator.getFixedRandomIndices(getQueryCount(), count - 1);
 
         startClock();
-        for (int i = 0; i < QUERY_COUNT; i++) {
+        for (int i = 0; i < getQueryCount(); i++) {
             int nextIndex = randomIndices[i];
             RealmQuery<IndexedStringEntity> query = realm.where(IndexedStringEntity.class);
             query.equalTo("indexedString", fixedRandomStrings[nextIndex]);
