@@ -24,7 +24,7 @@ public class PerformanceTestNotNullIdentityScope extends PerformanceTestNotNull 
 
     @Override
     protected void setUp() throws Exception {
-        IdentityScopeLong<SimpleEntityNotNull> identityScope = new IdentityScopeLong< SimpleEntityNotNull>();
+        IdentityScopeLong<SimpleEntityNotNull> identityScope = new IdentityScopeLong<>();
         setIdentityScopeBeforeSetUp(identityScope);
         super.setUp();
     }

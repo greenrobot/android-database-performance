@@ -17,163 +17,124 @@
  */
 package de.greenrobot.daotest.performance;
 
+import de.greenrobot.dao.AbstractDao;
+import de.greenrobot.dao.test.AbstractDaoTest;
+import de.greenrobot.performance.Tools;
+import de.greenrobot.performance.Tools.LogMessage;
+import de.greenrobot.performance.common.BuildConfig;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import android.os.Debug;
-import de.greenrobot.dao.AbstractDao;
-import de.greenrobot.dao.DaoLog;
-import de.greenrobot.dao.test.AbstractDaoTest;
-
+/**
+ * Base test case including some helper methods when running a performance test.
+ *
+ * <p/><b>Note:</b> To run a single test, create a new "Android Tests" run configuration in Android
+ * Studio. Right-click to run for Android Tests currently does not work in abstract classes.
+ */
 public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
         extends AbstractDaoTest<D, T, K> {
-    private static final int BATCH_SIZE = 10000;
-    private static final int RUNS = 8;
 
-    long start;
-    private String traceName;
-    boolean useTraceView = false;
+    private static final int RUNS = 8;
+    private final Tools tools;
 
     public PerformanceTest(Class<D> daoClass) {
         super(daoClass, false);
+        tools = new Tools(getLogTag(), getBatchSize(), 0);
     }
 
-    public void testPerformance() throws Exception {
-        // disabled for regular builds
-//        for (int i = 0; i < RUNS; i++) {
-//            runTests(BATCH_SIZE);
-//        }
+    public static int getBatchSize() {
+        return Tools.DEFAULT_BATCH_SIZE;
     }
 
-    protected void runTests(int entityCount) {
-        DaoLog.d("####################");
-        DaoLog.d(getClass().getSimpleName() + ": " + entityCount + " entities on " + new Date());
-        DaoLog.d("####################");
-        clearIdentityScopeIfAny();
+    protected abstract String getLogTag();
 
-        List<T> list = new ArrayList<T>(entityCount);
-        for (int i = 0; i < entityCount; i++) {
+    /**
+     * Run one-by-one create, update. Delete all. Then batch create, update, load and access. Delete
+     * all.
+     */
+    public void testSingleAndBatchCrud() throws Exception {
+        //noinspection PointlessBooleanExpression
+        if (!BuildConfig.RUN_PERFORMANCE_TESTS) {
+            log("Performance tests are disabled.");
+            return;
+        }
+
+        log("--------One-by-one/Batch CRUD: Start");
+        for (int i = 0; i < RUNS; i++) {
+            log("----Run " + (i + 1) + " of " + RUNS);
+            clearIdentityScopeIfAny();
+            oneByOneCrudRun(getBatchSize() / 10);
+            batchCrudRun(getBatchSize());
+        }
+        log("--------One-by-one/Batch CRUD: End");
+    }
+
+    private void oneByOneCrudRun(int count) {
+        List<T> list = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
             list.add(createEntity());
         }
-        System.gc();
 
-        dao.deleteAll();
-        // runOneByOneTests(list, entityCount, entityCount / 10);
-        dao.deleteAll();
-        DaoLog.d("------------------------");
-        System.gc();
-
-        // runBatchTests(list);
-
-        startClock("delete-all");
-        dao.deleteAll();
-        stopClock();
-        System.gc();
-    }
-
-    protected void runOneByOneTests(List<T> list, int loadCount, int modifyCount) {
-        dao.insertInTx(list);
-        List<K> keys = new ArrayList<K>(loadCount);
-        for (int i = 0; i < loadCount; i++) {
-            keys.add(daoAccess.getKey(list.get(i)));
-        }
-        clearIdentityScopeIfAny();
-        System.gc();
-
-        list = runLoadOneByOne(keys, "load-one-by-one-1");
-        list = runLoadOneByOne(keys, "load-one-by-one-2");
-        Debug.stopMethodTracing();
-
-        dao.deleteAll();
-        System.gc();
-
-        startClock("insert-one-by-one");
-        for (int i = 0; i < modifyCount; i++) {
+        startClock();
+        for (int i = 0; i < count; i++) {
             dao.insert(list.get(i));
         }
-        stopClock(modifyCount + " entities");
-        System.gc();
+        stopClock(LogMessage.ONE_BY_ONE_CREATE);
 
-        startClock("update-one-by-one");
-        for (int i = 0; i < modifyCount; i++) {
+        startClock();
+        for (int i = 0; i < count; i++) {
             dao.update(list.get(i));
         }
-        stopClock(modifyCount + " entities");
-        System.gc();
+        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
 
-        startClock("delete-one-by-one");
-        for (int i = 0; i < modifyCount; i++) {
-            dao.delete(list.get(i));
-        }
-        stopClock(modifyCount + " entities");
-        System.gc();
+        dao.deleteAll();
     }
 
-    protected List<T> runLoadOneByOne(List<K> keys, String traceName) {
-        List<T> list = new ArrayList<T>(keys.size());
-        startClock(traceName);
-        for (K key : keys) {
-            list.add(dao.load(key));
+    private void batchCrudRun(int count) {
+        List<T> list = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            list.add(createEntity());
         }
-        stopClock(keys.size() + " entities");
-        return list;
-    }
 
-    protected void runBatchTests(List<T> list) {
-        startClock("insert");
+        startClock();
         dao.insertInTx(list);
-        stopClock(list.size() + " entities");
+        stopClock(LogMessage.BATCH_CREATE);
 
-        list = null;
-        System.gc();
-
-        clearIdentityScopeIfAny();
-        list = runLoadAll("load-all-1");
-        accessAll(list, "access-all-1");
-        list = runLoadAll("load-all-2");
-        accessAll(list, "access-all-2");
-
-        startClock("update");
+        startClock();
         dao.updateInTx(list);
-        stopClock(list.size() + " entities");
+        stopClock(LogMessage.BATCH_UPDATE);
+
+        startClock();
+        List<T> reloaded = dao.loadAll();
+        stopClock(LogMessage.BATCH_READ);
+
+        accessAll(reloaded);
+
+        startClock();
+        dao.deleteAll();
+        stopClock(LogMessage.BATCH_DELETE);
     }
 
-    protected List<T> runLoadAll(String traceName) {
-        startClock(traceName);
-        List<T> list = dao.loadAll();
-        stopClock(list.size() + " entities");
-        return list;
+    protected void startClock() {
+        tools.startClock();
     }
 
-    protected void startClock(String traceName) {
-        System.gc();
-        this.traceName = traceName;
-        if (useTraceView) {
-            Debug.startMethodTracing(traceName);
-        }
-        start = System.currentTimeMillis();
-    }
-
-    protected void stopClock() {
-        stopClock(null);
-    }
-
-    protected void stopClock(String extraInfoOrNull) {
-        long time = System.currentTimeMillis() - start;
-        String extraLog = extraInfoOrNull != null ? " (" + extraInfoOrNull + ")" : "";
-        DaoLog.d(traceName + " completed in " + time + " ms" + extraLog);
-        if (useTraceView) {
-            Debug.stopMethodTracing();
-        }
-        System.gc();
+    protected void stopClock(LogMessage type) {
+        tools.stopClock(type);
     }
 
     protected abstract T createEntity();
 
     /**
      * Access every property of the entity under test and record execution time with {@link
-     * #startClock(String)} and {@link #stopClock()}.
+     * #startClock} and {@link #stopClock}.
      */
-    protected abstract void accessAll(List<T> list, String traceName);
+    protected abstract void accessAll(List<T> list);
+
+    /**
+     * Convenience method to create a debug log message.
+     */
+    protected void log(String message) {
+        tools.log(message);
+    }
 }
