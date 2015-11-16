@@ -18,6 +18,12 @@ import java.util.concurrent.TimeUnit;
  * Make sure to run the performance tests while in AIRPLANE MODE, as
  * <code>Firebase.goOffline()</code> does not seem to work as expected.
  *
+ * <p>Note that Firebase creates an asynchronous task when <code>setValue()</code> is called, so the
+ * time measured does not include the time it took to actually save a value to the local persistence
+ * cache (SQLite database). Sadly there is no callback for when the persistence manager has
+ * completed its writes (also <code>CompletionListener</code> of the network call does not fire if
+ * offline).
+ *
  * https://www.firebase.com/docs/android/guide/
  */
 public class PerformanceTestFirebase extends BasePerfTestCase {
@@ -78,7 +84,8 @@ public class PerformanceTestFirebase extends BasePerfTestCase {
         }
     }
 
-    private void indexedStringEntityQueriesRun(Firebase entityRef, int count) throws InterruptedException {
+    private void indexedStringEntityQueriesRun(Firebase entityRef, int count)
+            throws InterruptedException {
         // create entities
         List<IndexedStringEntity> entities = new ArrayList<>(count);
         String[] fixedRandomStrings = StringGenerator.createFixedRandomStrings(count);
