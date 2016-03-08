@@ -1,15 +1,11 @@
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
-    }
-}
-
 subprojects {
+    buildscript {
+        repositories {
+            jcenter()
+            mavenCentral()
+        }
+    }
+
     repositories {
         jcenter()
         mavenCentral()
@@ -26,4 +22,8 @@ ext {
 
     minSdkVersion = 4
     targetSdkVersion = 19
+
+    dep = [
+            androidPlugin: 'com.android.tools.build:gradle:1.5.0'
+    ]
 }
