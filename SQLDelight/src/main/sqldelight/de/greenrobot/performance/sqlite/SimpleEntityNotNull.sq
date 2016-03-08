@@ -1,0 +1,18 @@
+-- table, column and method names have to be lower case
+-- supported types: https://github.com/square/sqldelight#types
+CREATE TABLE simple_entity_not_null (
+  _id LONG NOT NULL PRIMARY KEY,
+  simple_boolean BOOLEAN NOT NULL,
+  simple_byte INT NOT NULL,
+  simple_short SHORT NOT NULL,
+  simple_int INT NOT NULL,
+  simple_long LONG NOT NULL,
+  simple_float FLOAT NOT NULL,
+  simple_double DOUBLE NOT NULL,
+  simple_string STRING NOT NULL,
+  simple_byte_array BLOB NOT NULL
+);
+
+select_all:
+SELECT *
+FROM simple_entity_not_null;

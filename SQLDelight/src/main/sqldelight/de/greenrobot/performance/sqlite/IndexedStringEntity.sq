@@ -1,0 +1,11 @@
+-- table, column and method names have to be lower case
+-- supported types: https://github.com/square/sqldelight#types
+CREATE TABLE indexed_string_entity (
+  _id LONG NOT NULL PRIMARY KEY,
+  indexed_string STRING NOT NULL
+);
+
+with_string:
+SELECT *
+FROM indexed_string_entity
+WHERE indexed_string = ?;
