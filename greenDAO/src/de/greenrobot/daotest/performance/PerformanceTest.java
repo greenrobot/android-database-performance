@@ -66,6 +66,7 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
             oneByOneCrudRun(getBatchSize() / 10);
             batchCrudRun(getBatchSize());
         }
+        tools.logResults();
         log("--------One-by-one/Batch CRUD: End");
     }
 

@@ -1,6 +1,11 @@
 package de.greenrobot.performance;
 
 import android.util.Log;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Helper tools for performance measurements.
@@ -14,11 +19,13 @@ public class Tools {
     private long start;
     private int batchSize;
     private int queryCount;
+    private Map<Integer, List<Long>> measurements;
 
     public Tools(String logTag, int batchSize, int queryCount) {
         this.logTag = logTag;
         this.batchSize = batchSize;
         this.queryCount = queryCount;
+        measurements = new HashMap<>(LogMessage.values().length);
     }
 
     /**
@@ -26,6 +33,37 @@ public class Tools {
      */
     public void log(String message) {
         Log.d(logTag, message);
+    }
+
+    /**
+     * Logs the collected results grouped by measurement type, displays the average and median over
+     * all runs.
+     */
+    public void logResults() {
+        StringBuilder results = new StringBuilder();
+        results.append("----Results").append("\n");
+        results.append("All values in [ms]").append("\n\n");
+
+        // go through results by enum ordinal so results are sorted as expected
+        for (int type = 0; type < LogMessage.values().length; type++) {
+            List<Long> typeMeasurements = measurements.get(type);
+            if (typeMeasurements == null) {
+                continue;
+            }
+
+            results.append(getMessage(LogMessage.values()[type])).append("\n");
+            long sum = 0;
+            for (Long measurement : typeMeasurements) {
+                sum += measurement;
+                results.append(measurement).append("\n");
+            }
+            results.append(sum / typeMeasurements.size()).append(" AVERAGE").append("\n");
+            results.append(getMedian(typeMeasurements)).append(" MEDIAN").append("\n");
+            results.append("\n");
+        }
+
+        results.append("----");
+        log(results.toString());
     }
 
     public void startClock() {
@@ -39,30 +77,53 @@ public class Tools {
         long time = System.currentTimeMillis() - start;
         start = 0;
 
-        String message = null;
-        if (type == LogMessage.QUERY_INDEXED) {
-            message = "Queried for " + getQueryCount() + " of " + getBatchSize()
-                    + " indexed entities in " + time + " ms.";
-        } else if (type == LogMessage.BATCH_CREATE) {
-            message = "Created (batch) " + getBatchSize() + " entities in " + time + " ms";
-        } else if (type == LogMessage.BATCH_UPDATE) {
-            message = "Updated (batch) " + getBatchSize() + " entities in " + time + " ms";
-        } else if (type == LogMessage.BATCH_READ) {
-            message = "Read (batch) " + getBatchSize() + " entities in " + time + " ms";
-        } else if (type == LogMessage.BATCH_ACCESS) {
-            message = "Accessed properties of " + getBatchSize() + " entities in " + time + " ms";
-        } else if (type == LogMessage.ONE_BY_ONE_CREATE) {
-            message = "Inserted (one-by-one) " + getBatchSize() / 10 + " entities in " + time
-                    + " ms";
-        } else if (type == LogMessage.ONE_BY_ONE_UPDATE) {
-            message = "Updated (one-by-one) " + getBatchSize() / 10 + " entities in " + time
-                    + " ms";
-        } else if (type == LogMessage.BATCH_DELETE) {
-            message = "Deleted (batch) all entities in " + time + " ms";
+        // store measurement
+        List<Long> typeMeasurements = measurements.get(type.ordinal());
+        if (typeMeasurements == null) {
+            typeMeasurements = new ArrayList<>();
+            measurements.put(type.ordinal(), typeMeasurements);
         }
+        typeMeasurements.add(time);
 
-        if (message != null) {
-            log(message);
+        // log measured value
+        log(getMessage(type) + " in " + time + " ms");
+    }
+
+    private double getMedian(List<Long> unsorted) {
+        // sort ascending
+        Collections.sort(unsorted);
+        Long[] values = new Long[unsorted.size()];
+        values = unsorted.toArray(values);
+        // get median
+        int middle = values.length / 2;
+        if (values.length % 2 == 1) {
+            return values[middle];
+        } else {
+            return (values[middle - 1] + values[middle]) / 2.0;
+        }
+    }
+
+    private String getMessage(LogMessage type) {
+        switch (type) {
+            case QUERY_INDEXED:
+                return "Queried for " + getQueryCount() + " of " + getBatchSize()
+                        + " indexed entities";
+            case ONE_BY_ONE_CREATE:
+                return "Inserted (one-by-one) " + getBatchSize() / 10 + " entities";
+            case ONE_BY_ONE_UPDATE:
+                return "Updated (one-by-one) " + getBatchSize() / 10 + " entities";
+            case BATCH_CREATE:
+                return "Created (batch) " + getBatchSize() + " entities";
+            case BATCH_UPDATE:
+                return "Updated (batch) " + getBatchSize() + " entities";
+            case BATCH_READ:
+                return "Read (batch) " + getBatchSize() + " entities";
+            case BATCH_ACCESS:
+                return "Accessed properties of " + getBatchSize() + " entities";
+            case BATCH_DELETE:
+                return "Deleted (batch) all entities";
+            default:
+                throw new IllegalArgumentException("No log message defined for type " + type);
         }
     }
 
@@ -75,14 +136,14 @@ public class Tools {
     }
 
     public enum LogMessage {
+        QUERY_INDEXED,
+        ONE_BY_ONE_CREATE,
+        ONE_BY_ONE_UPDATE,
         BATCH_CREATE,
         BATCH_UPDATE,
         BATCH_READ,
         BATCH_ACCESS,
-        ONE_BY_ONE_CREATE,
-        ONE_BY_ONE_UPDATE,
-        BATCH_DELETE,
-        QUERY_INDEXED
+        BATCH_DELETE
     }
 
 }

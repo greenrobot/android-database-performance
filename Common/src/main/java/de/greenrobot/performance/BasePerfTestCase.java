@@ -47,6 +47,7 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
 
         log("--------Indexed Queries: Start");
         doIndexedStringEntityQueries();
+        tools.logResults();
         log("--------Indexed Queries: End");
     }
 
@@ -59,6 +60,7 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
 
         log("--------One-by-one/Batch CRUD: Start");
         doOneByOneAndBatchCrud();
+        tools.logResults();
         log("--------One-by-one/Batch CRUD: End");
     }
 
