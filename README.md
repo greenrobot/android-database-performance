@@ -4,6 +4,12 @@ This project evaluates Android databases and related persistence solutions. It t
 
 [![Build Status](https://travis-ci.org/greenrobot/android-database-performance.svg?branch=master)](https://travis-ci.org/greenrobot/android-database-performance)
 
+## Usage
+
+To run the Android instrumentation tests make sure to set `RUN_PERFORMANCE_TESTS` in [`Common\build.gradle`][1] to `true` (disabled by default so travis does not have to run them).
+
+To run with Android Studio, create a new `Android Tests` run configuration. Specify the desired `PerfTest<x>` class and a test method (see [`BasePerfTestCase`][2]).
+
 
 More Open Source by greenrobot
 ==============================
@@ -15,3 +21,6 @@ More Open Source by greenrobot
 
 [Follow us on Google+](https://plus.google.com/b/114381455741141514652/+GreenrobotDe/posts) to stay up to date.
 
+
+[1]: https://github.com/greenrobot/android-database-performance/blob/master/Common/build.gradle
+[2]: https://github.com/greenrobot/android-database-performance/blob/master/Common/src/main/java/de/greenrobot/performance/BasePerfTestCase.java

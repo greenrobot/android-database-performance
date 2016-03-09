@@ -13,7 +13,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
 
-        buildConfigField "boolean", "RUN_PERFORMANCE_TESTS", "true"
+        buildConfigField "boolean", "RUN_PERFORMANCE_TESTS", "false"
     }
 }
 
