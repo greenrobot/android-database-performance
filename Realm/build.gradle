@@ -1,10 +1,14 @@
 buildscript {
     dependencies {
         classpath dep.androidPlugin
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath 'io.realm:realm-gradle-plugin:0.88.0'
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'realm-android'
 
 android {
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -12,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId 'de.greenrobot.performance.realm'
-        minSdkVersion rootProject.ext.minSdkVersion
+        minSdkVersion 9
         targetSdkVersion rootProject.ext.targetSdkVersion
 
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
@@ -21,5 +25,4 @@ android {
 
 dependencies {
     androidTestCompile project(':Common')
-    androidTestCompile 'io.realm:realm-android:0.82.2'
 }
