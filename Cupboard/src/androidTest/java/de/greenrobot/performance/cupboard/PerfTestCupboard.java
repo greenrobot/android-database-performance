@@ -14,9 +14,9 @@ import nl.qbusict.cupboard.CupboardBuilder;
 import nl.qbusict.cupboard.DatabaseCompartment;
 
 /**
- * https://bitbucket.org/qbusict/cupboard/wiki/GettingStarted
+ * https://bitbucket.org/littlerobots/cupboard/wiki/GettingStarted
  */
-public class PerformanceTestCupboard extends BasePerfTestCase {
+public class PerfTestCupboard extends BasePerfTestCase {
 
     private static final String DATABASE_NAME = "cupboard.db";
     private static final int DATABASE_VERSION = 1;
@@ -25,7 +25,7 @@ public class PerformanceTestCupboard extends BasePerfTestCase {
 
     @Override
     protected String getLogTag() {
-        return "PerfTestCupboard";
+        return getClass().getSimpleName();
     }
 
     @Override
