@@ -24,7 +24,7 @@ import java.util.Map;
  * http://developer.couchbase.com/documentation/mobile/1.1.0/develop/training/build-first-android-app/index.html
  * https://github.com/couchbaselabs/ToDoLite-Android
  */
-public class PerformanceTestCouchbase extends BasePerfTestCase {
+public class PerfTestCouchbase extends BasePerfTestCase {
 
     private static final String DB_NAME = "couchbase-test";
     private static final String DOC_TYPE = "simpleentity";
@@ -33,7 +33,7 @@ public class PerformanceTestCouchbase extends BasePerfTestCase {
 
     @Override
     protected String getLogTag() {
-        return "PerfTestCouchbase";
+        return getClass().getSimpleName();
     }
 
     @Override
@@ -93,6 +93,9 @@ public class PerformanceTestCouchbase extends BasePerfTestCase {
 
         // query for entities by indexed string at random
         int[] randomIndices = StringGenerator.getFixedRandomIndices(getQueryCount(), count - 1);
+
+        // clear the document cache to force loading properties from the database
+        database.clearDocumentCache();
 
         startClock();
         for (int i = 0; i < getQueryCount(); i++) {
@@ -187,6 +190,9 @@ public class PerformanceTestCouchbase extends BasePerfTestCase {
         }
         database.endTransaction(true);
         stopClock(LogMessage.BATCH_UPDATE);
+
+        // clear the document cache to force loading properties from the database
+        database.clearDocumentCache();
 
         startClock();
         List<Document> reloaded = new ArrayList<>();
