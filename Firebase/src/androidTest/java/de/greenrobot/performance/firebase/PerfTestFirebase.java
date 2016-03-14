@@ -26,14 +26,14 @@ import java.util.concurrent.TimeUnit;
  *
  * https://www.firebase.com/docs/android/guide/
  */
-public class PerformanceTestFirebase extends BasePerfTestCase {
+public class PerfTestFirebase extends BasePerfTestCase {
 
     private Firebase rootFirebaseRef;
     private List<SimpleEntityNotNull> reloaded;
 
     @Override
     protected String getLogTag() {
-        return "PerfTestFirebase";
+        return getClass().getSimpleName();
     }
 
     @Override

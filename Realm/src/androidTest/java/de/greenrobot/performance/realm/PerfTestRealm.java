@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * https://realm.io/docs/java/latest/ https://github.com/realm/realm-java/
  */
-public class PerformanceTestRealm extends BasePerfTestCase {
+public class PerfTestRealm extends BasePerfTestCase {
 
     private boolean inMemory = false;
 
@@ -23,7 +23,7 @@ public class PerformanceTestRealm extends BasePerfTestCase {
 
     @Override
     protected String getLogTag() {
-        return "PerfTestRealm";
+        return getClass().getSimpleName();
     }
 
     @Override

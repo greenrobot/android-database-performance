@@ -15,14 +15,14 @@ import java.util.List;
 /**
  * https://parse.com/docs/android/guide
  */
-public class PerformanceTestParse extends BasePerfTestCase {
+public class PerfTestParse extends BasePerfTestCase {
 
     // reduced query count due to slow performance
     private static final int QUERY_COUNT = 100;
 
     @Override
     protected String getLogTag() {
-        return "PerfTestParse";
+        return getClass().getSimpleName();
     }
 
     @Override
