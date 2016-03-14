@@ -12,15 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Note: looks like development has ceased. Last commit on 2014-10-07.
+ *
  * https://github.com/pardom/ActiveAndroid/wiki/Getting-started
  */
-public class PerformanceTestActiveAndroid extends BasePerfTestCase {
+public class PerfTestActiveAndroid extends BasePerfTestCase {
 
     private static final String DATABASE_NAME = "active-android.db";
 
     @Override
     protected String getLogTag() {
-        return "PerfTestActiveAndroid";
+        return getClass().getSimpleName();
     }
 
     @Override
