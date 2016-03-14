@@ -1,0 +1,29 @@
+buildscript {
+    dependencies {
+        classpath dep.androidPlugin
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+android {
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId 'de.greenrobot.performance.squidb'
+        minSdkVersion 14
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+    }
+}
+
+dependencies {
+    androidTestCompile project(':Common')
+    compile 'com.yahoo.squidb:squidb:2.0.0'
+    compile 'com.yahoo.squidb:squidb-annotations:2.0.0'
+    apt 'com.yahoo.squidb:squidb-processor:2.0.0'
+}
