@@ -22,11 +22,6 @@ public class PerfTestRealm extends BasePerfTestCase {
     private Realm realm;
 
     @Override
-    protected String getLogTag() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

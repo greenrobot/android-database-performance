@@ -21,11 +21,6 @@ public class PerfTestRequery extends BasePerfTestCase {
     private static final int DATABASE_VERSION = 1;
 
     @Override
-    protected String getLogTag() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     protected void tearDown() throws Exception {
         getApplication().deleteDatabase(Models.DEFAULT.name());
 

@@ -20,11 +20,6 @@ import java.util.List;
 public class PerfTestDbFlow extends BasePerfTestCase {
 
     @Override
-    protected String getLogTag() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

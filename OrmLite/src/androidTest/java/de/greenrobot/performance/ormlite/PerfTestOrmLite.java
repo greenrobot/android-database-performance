@@ -12,15 +12,10 @@ import java.util.concurrent.Callable;
 /**
  * http://ormlite.com/sqlite_java_android_orm.shtml https://github.com/j256/ormlite-examples
  */
-public class PerformanceTestOrmLite extends BasePerfTestCase {
+public class PerfTestOrmLite extends BasePerfTestCase {
 
     private boolean inMemory = false;
     private DbHelper dbHelper;
-
-    @Override
-    protected String getLogTag() {
-        return "PerfTestOrmLite";
-    }
 
     @Override
     protected void setUp() throws Exception {

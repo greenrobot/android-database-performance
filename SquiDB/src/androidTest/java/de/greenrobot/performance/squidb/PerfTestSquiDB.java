@@ -15,11 +15,6 @@ import java.util.List;
 public class PerfTestSquiDB extends BasePerfTestCase {
 
     @Override
-    protected String getLogTag() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     protected void tearDown() throws Exception {
         getApplication().deleteDatabase(MySquidDatabase.DATABASE_NAME);
 

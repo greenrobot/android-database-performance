@@ -24,11 +24,6 @@ public class PerfTestCupboard extends BasePerfTestCase {
     private Cupboard cupboard;
 
     @Override
-    protected String getLogTag() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

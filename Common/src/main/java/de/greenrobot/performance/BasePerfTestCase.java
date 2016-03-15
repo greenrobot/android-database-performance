@@ -29,7 +29,12 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
         return Tools.DEFAULT_QUERY_COUNT;
     }
 
-    protected abstract String getLogTag();
+    /**
+     * Specify a different log tag. By default uses the simple name of the class.
+     */
+    protected String getLogTag() {
+        return getClass().getSimpleName();
+    }
 
     @Override
     protected void setUp() throws Exception {

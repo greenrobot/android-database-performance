@@ -21,11 +21,6 @@ public class PerfTestParse extends BasePerfTestCase {
     private static final int QUERY_COUNT = 100;
 
     @Override
-    protected String getLogTag() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     protected int getBatchSize() {
         // reduced batch size due to memory leak when pinning (of bolts.Task?)
         return 1000;

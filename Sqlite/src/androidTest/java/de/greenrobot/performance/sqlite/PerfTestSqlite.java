@@ -15,15 +15,10 @@ import java.util.List;
 /**
  * https://bitbucket.org/qbusict/cupboard/wiki/GettingStarted
  */
-public class PerformanceTestSqlite extends BasePerfTestCase {
+public class PerfTestSqlite extends BasePerfTestCase {
 
     private static final String DATABASE_NAME = "sqlite.db";
     private static final int DATABASE_VERSION = 1;
-
-    @Override
-    protected String getLogTag() {
-        return "PerfTestSqlite";
-    }
 
     @Override
     protected void tearDown() throws Exception {

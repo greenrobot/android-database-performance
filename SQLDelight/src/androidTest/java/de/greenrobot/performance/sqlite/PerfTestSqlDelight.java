@@ -16,11 +16,6 @@ import java.util.List;
 public class PerfTestSqlDelight extends BasePerfTestCase {
 
     @Override
-    protected String getLogTag() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     protected void tearDown() throws Exception {
         getApplication().deleteDatabase(SqlDelightDbHelper.DATABASE_NAME);
 

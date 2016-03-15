@@ -32,11 +32,6 @@ public class PerfTestFirebase extends BasePerfTestCase {
     private List<SimpleEntityNotNull> reloaded;
 
     @Override
-    protected String getLogTag() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     protected int getQueryCount() {
         // reduced query count as local datastore can not be indexed, resulting in low performance
         return 100;

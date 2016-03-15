@@ -21,11 +21,6 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
     private static final String DATABASE_NAME = "active-android.db";
 
     @Override
-    protected String getLogTag() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     protected void tearDown() throws Exception {
         if (Cache.isInitialized()) {
             ActiveAndroid.dispose();

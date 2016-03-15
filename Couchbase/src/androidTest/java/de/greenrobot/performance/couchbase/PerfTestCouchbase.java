@@ -32,11 +32,6 @@ public class PerfTestCouchbase extends BasePerfTestCase {
     private Database database;
 
     @Override
-    protected String getLogTag() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
