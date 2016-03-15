@@ -5,6 +5,7 @@ import de.greenrobot.performance.StringGenerator;
 import de.greenrobot.performance.Tools;
 import io.requery.BlockingEntityStore;
 import io.requery.android.sqlite.DatabaseSource;
+import io.requery.cache.EmptyEntityCache;
 import io.requery.query.Result;
 import io.requery.sql.Configuration;
 import io.requery.sql.ConfigurationBuilder;
@@ -46,7 +47,8 @@ public class PerfTestRequery extends BasePerfTestCase {
     private BlockingEntityStore<Object> getData() {
         DatabaseSource source = new DatabaseSource(getApplication(), Models.DEFAULT,
                 DATABASE_VERSION);
-        Configuration configuration = new ConfigurationBuilder(source, Models.DEFAULT).build();
+        Configuration configuration = new ConfigurationBuilder(source,
+                Models.DEFAULT).setEntityCache(new EmptyEntityCache()).build();
         return new EntityDataStore<>(configuration).toBlocking();
     }
 
