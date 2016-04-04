@@ -48,26 +48,38 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
 
     protected abstract String getLogTag();
 
-    /**
-     * Run one-by-one create, update. Delete all. Then batch create, update, load and access. Delete
-     * all.
-     */
-    public void testSingleAndBatchCrud() throws Exception {
+    public void testOneByOneCrud() throws Exception {
         //noinspection PointlessBooleanExpression
         if (!BuildConfig.RUN_PERFORMANCE_TESTS) {
             log("Performance tests are disabled.");
             return;
         }
 
-        log("--------One-by-one/Batch CRUD: Start");
+        log("--------One-by-one CRUD: Start");
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
             clearIdentityScopeIfAny();
-            oneByOneCrudRun(getBatchSize() / 10);
+            oneByOneCrudRun(getBatchSize() / 100);
+        }
+        tools.logResults();
+        log("--------One-by-one CRUD: End");
+    }
+
+    public void testBatchCrud() throws Exception {
+        //noinspection PointlessBooleanExpression
+        if (!BuildConfig.RUN_PERFORMANCE_TESTS) {
+            log("Performance tests are disabled.");
+            return;
+        }
+
+        log("--------Batch CRUD: Start");
+        for (int i = 0; i < RUNS; i++) {
+            log("----Run " + (i + 1) + " of " + RUNS);
+            clearIdentityScopeIfAny();
             batchCrudRun(getBatchSize());
         }
         tools.logResults();
-        log("--------One-by-one/Batch CRUD: End");
+        log("--------Batch CRUD: End");
     }
 
     private void oneByOneCrudRun(int count) {
@@ -82,13 +94,33 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
         }
         stopClock(LogMessage.ONE_BY_ONE_CREATE);
 
+        for (int i = 0; i < count; i++) {
+            changeForUpdate(list.get(i));
+        }
         startClock();
         for (int i = 0; i < count; i++) {
             dao.update(list.get(i));
         }
         stopClock(LogMessage.ONE_BY_ONE_UPDATE);
 
-        dao.deleteAll();
+        startClock();
+        for (int i = 0; i < count; i++) {
+            dao.refresh(list.get(i));
+        }
+        stopClock(LogMessage.ONE_BY_ONE_REFRESH);
+
+        startClock();
+        for (int i = 0; i < count; i++) {
+            dao.delete(list.get(i));
+        }
+        stopClock(LogMessage.ONE_BY_ONE_DELETE);
+    }
+
+    /**
+     * Can be overridden, e.g. when indexed properties should change before an update.
+     * Time spent in this method is not measured.
+     */
+    protected void changeForUpdate(T t) {
     }
 
     private void batchCrudRun(int count) {
@@ -101,6 +133,9 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
         dao.insertInTx(list);
         stopClock(LogMessage.BATCH_CREATE);
 
+        for (int i = 0; i < count; i++) {
+            changeForUpdate(list.get(i));
+        }
         startClock();
         dao.updateInTx(list);
         stopClock(LogMessage.BATCH_UPDATE);
