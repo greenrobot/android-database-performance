@@ -109,9 +109,13 @@ public class Tools {
                 return "Queried for " + getQueryCount() + " of " + getBatchSize()
                         + " indexed entities";
             case ONE_BY_ONE_CREATE:
-                return "Inserted (one-by-one) " + getBatchSize() / 10 + " entities";
+                return "Inserted (one-by-one) " + getOneByOneCount() + " entities";
             case ONE_BY_ONE_UPDATE:
-                return "Updated (one-by-one) " + getBatchSize() / 10 + " entities";
+                return "Updated (one-by-one) " + getOneByOneCount() + " entities";
+            case ONE_BY_ONE_DELETE:
+                return "Deleted (one-by-one) " + getOneByOneCount() + " entities";
+            case ONE_BY_ONE_REFRESH:
+                return "Refreshed (one-by-one) " + getOneByOneCount() + " entities";
             case BATCH_CREATE:
                 return "Created (batch) " + getBatchSize() + " entities";
             case BATCH_UPDATE:
@@ -127,6 +131,10 @@ public class Tools {
         }
     }
 
+    private int getOneByOneCount() {
+        return getBatchSize() / 10;
+    }
+
     private int getBatchSize() {
         return batchSize;
     }
@@ -139,6 +147,8 @@ public class Tools {
         QUERY_INDEXED,
         ONE_BY_ONE_CREATE,
         ONE_BY_ONE_UPDATE,
+        ONE_BY_ONE_REFRESH,
+        ONE_BY_ONE_DELETE,
         BATCH_CREATE,
         BATCH_UPDATE,
         BATCH_READ,
