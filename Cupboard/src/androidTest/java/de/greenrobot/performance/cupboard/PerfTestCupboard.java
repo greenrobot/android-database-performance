@@ -99,7 +99,7 @@ public class PerfTestCupboard extends BasePerfTestCase {
 
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(database, getBatchSize());
+            oneByOneCrudRun(database, getOneByOneCount());
             batchCrudRun(database, getBatchSize());
         }
     }

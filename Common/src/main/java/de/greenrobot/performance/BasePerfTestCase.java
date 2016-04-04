@@ -25,6 +25,10 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
         return Tools.DEFAULT_BATCH_SIZE;
     }
 
+    protected int getOneByOneCount() {
+        return tools.getOneByOneCount();
+    }
+
     protected int getQueryCount() {
         return Tools.DEFAULT_QUERY_COUNT;
     }

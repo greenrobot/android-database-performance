@@ -131,7 +131,7 @@ public class Tools {
         }
     }
 
-    private int getOneByOneCount() {
+    public int getOneByOneCount() {
         return getBatchSize() / 10;
     }
 

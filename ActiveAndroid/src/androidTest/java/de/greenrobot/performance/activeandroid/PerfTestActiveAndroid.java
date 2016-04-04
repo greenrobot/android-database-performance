@@ -100,7 +100,7 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
 
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(getBatchSize() / 10);
+            oneByOneCrudRun(getOneByOneCount());
             batchCrudRun(getBatchSize());
         }
     }

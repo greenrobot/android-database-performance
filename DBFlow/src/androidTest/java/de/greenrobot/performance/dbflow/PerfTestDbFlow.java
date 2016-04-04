@@ -83,7 +83,7 @@ public class PerfTestDbFlow extends BasePerfTestCase {
     protected void doOneByOneAndBatchCrud() throws Exception {
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(getBatchSize() / 10);
+            oneByOneCrudRun(getOneByOneCount());
             batchCrudRun(getBatchSize());
         }
     }

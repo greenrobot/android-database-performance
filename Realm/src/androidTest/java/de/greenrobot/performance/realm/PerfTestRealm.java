@@ -109,7 +109,7 @@ public class PerfTestRealm extends BasePerfTestCase {
     protected void doOneByOneAndBatchCrud() throws Exception {
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(getBatchSize());
+            oneByOneCrudRun(getOneByOneCount());
             batchCrudRun(getBatchSize());
         }
     }

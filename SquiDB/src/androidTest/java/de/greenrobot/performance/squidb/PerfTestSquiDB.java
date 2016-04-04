@@ -85,7 +85,7 @@ public class PerfTestSquiDB extends BasePerfTestCase {
         // set up database
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(database, getBatchSize() / 10);
+            oneByOneCrudRun(database, getOneByOneCount());
             batchCrudRun(database, getBatchSize());
         }
     }

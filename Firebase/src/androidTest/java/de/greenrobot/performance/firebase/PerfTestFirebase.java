@@ -153,7 +153,7 @@ public class PerfTestFirebase extends BasePerfTestCase {
 
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(simpleEntityRef, getBatchSize() / 10);
+            oneByOneCrudRun(simpleEntityRef, getOneByOneCount());
             batchCrudRun(simpleEntityRef, getBatchSize());
         }
     }

@@ -107,7 +107,7 @@ public class PerfTestOrmLite extends BasePerfTestCase {
 
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(dao, getBatchSize() / 10);
+            oneByOneCrudRun(dao, getOneByOneCount());
             batchCrudRun(dao, getBatchSize());
         }
     }

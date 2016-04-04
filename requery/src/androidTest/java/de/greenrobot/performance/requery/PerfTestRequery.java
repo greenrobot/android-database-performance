@@ -105,7 +105,7 @@ public class PerfTestRequery extends BasePerfTestCase {
         // set up database
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(data, getBatchSize() / 10);
+            oneByOneCrudRun(data, getOneByOneCount());
             batchCrudRun(data, getBatchSize());
         }
     }
