@@ -23,7 +23,8 @@ android {
 
 dependencies {
     androidTestCompile project(':Common')
-    compile 'com.yahoo.squidb:squidb:2.0.0'
-    compile 'com.yahoo.squidb:squidb-annotations:2.0.0'
-    apt 'com.yahoo.squidb:squidb-processor:2.0.0'
+    def squidbVersion = '2.0.2'
+    compile "com.yahoo.squidb:squidb:$squidbVersion"
+    compile "com.yahoo.squidb:squidb-annotations:$squidbVersion"
+    apt "com.yahoo.squidb:squidb-processor:$squidbVersion"
 }
