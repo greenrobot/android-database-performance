@@ -13,7 +13,7 @@ public abstract class AbstractIndexedStringEntity {
     @Key
     public long _id;
 
-    @Index(name = "string_index")
+    @Index(value = "string_index")
     public String indexedString;
 
 }
