@@ -27,7 +27,7 @@ android {
 
 dependencies {
     androidTestCompile project(':Common')
-    def requeryVersion = '1.0.0-beta6'
+    def requeryVersion = '1.0.0-beta11'
     compile "io.requery:requery:${requeryVersion}"
     compile "io.requery:requery-android:${requeryVersion}"
     apt "io.requery:requery-processor:${requeryVersion}"
