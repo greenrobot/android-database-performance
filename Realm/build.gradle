@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId 'de.greenrobot.performance.realm'
-        minSdkVersion 9
+        minSdkVersion 11
         targetSdkVersion rootProject.ext.targetSdkVersion
 
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'

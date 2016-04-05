@@ -23,6 +23,10 @@ android {
 
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
     }
+
+    lintOptions {
+        ignore 'InvalidPackage'
+    }
 }
 
 dependencies {
