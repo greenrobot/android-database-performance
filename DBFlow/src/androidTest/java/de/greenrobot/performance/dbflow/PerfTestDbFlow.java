@@ -1,18 +1,22 @@
 package de.greenrobot.performance.dbflow;
 
+import android.support.annotation.NonNull;
+
+import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.data.Blob;
-import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
-import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.process.UpdateModelListTransaction;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
-import de.greenrobot.performance.BasePerfTestCase;
-import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools.LogMessage;
+import com.raizlabs.android.dbflow.structure.Model;
+import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.StringGenerator;
+import de.greenrobot.performance.Tools.LogMessage;
 
 /**
  * https://github.com/Raizlabs/DBFlow/blob/master/usage/GettingStarted.md
@@ -23,7 +27,7 @@ public class PerfTestDbFlow extends BasePerfTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        FlowManager.init(getApplication());
+        FlowManager.init(new FlowConfig.Builder(getApplication()).build());
     }
 
     @Override
@@ -55,7 +59,8 @@ public class PerfTestDbFlow extends BasePerfTestCase {
         log("Built entities.");
 
         // insert entities
-        new SaveModelTransaction<>(ProcessModelInfo.withModels(entities)).onExecute();
+        FlowManager.getDatabase(FlowDatabase.class).executeTransaction(insertTransaction(entities));
+
         log("Inserted entities.");
 
         // query for entities by indexed string at random
@@ -77,6 +82,30 @@ public class PerfTestDbFlow extends BasePerfTestCase {
         // delete all entities
         Delete.table(IndexedStringEntity.class);
         log("Deleted all entities.");
+    }
+
+    @NonNull
+    private <TModel extends Model> ProcessModelTransaction<TModel> insertTransaction(List<TModel> entities) {
+        return new ProcessModelTransaction.Builder<>(
+            new ProcessModelTransaction.ProcessModel<TModel>() {
+                @Override
+                public void processModel(TModel model) {
+                    model.insert();
+                }
+            }
+        ).addAll(entities).build();
+    }
+
+    @NonNull
+    private <TModel extends Model> ProcessModelTransaction<TModel> updateTransaction(List<TModel> entities) {
+        return new ProcessModelTransaction.Builder<>(
+            new ProcessModelTransaction.ProcessModel<TModel>() {
+                @Override
+                public void processModel(TModel model) {
+                    model.update();
+                }
+            }
+        ).addAll(entities).build();
     }
 
     @Override
@@ -117,11 +146,11 @@ public class PerfTestDbFlow extends BasePerfTestCase {
         }
 
         startClock();
-        new SaveModelTransaction<>(ProcessModelInfo.withModels(list)).onExecute();
+        FlowManager.getDatabase(FlowDatabase.class).executeTransaction(insertTransaction(list));
         stopClock(LogMessage.BATCH_CREATE);
 
         startClock();
-        new UpdateModelListTransaction<>(ProcessModelInfo.withModels(list)).onExecute();
+        FlowManager.getDatabase(FlowDatabase.class).executeTransaction(updateTransaction(list));
         stopClock(LogMessage.BATCH_UPDATE);
 
         startClock();
