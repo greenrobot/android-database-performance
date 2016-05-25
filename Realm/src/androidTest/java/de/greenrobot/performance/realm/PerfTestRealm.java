@@ -100,7 +100,7 @@ public class PerfTestRealm extends BasePerfTestCase {
 
         // delete all entities
         realm.beginTransaction();
-        realm.allObjects(IndexedStringEntity.class).clear();
+        realm.delete(IndexedStringEntity.class);
         realm.commitTransaction();
         log("Deleted all entities.");
     }
@@ -158,7 +158,7 @@ public class PerfTestRealm extends BasePerfTestCase {
         stopClock(LogMessage.BATCH_UPDATE);
 
         startClock();
-        RealmResults<SimpleEntityNotNull> reloaded = realm.allObjects(SimpleEntityNotNull.class);
+        RealmResults<SimpleEntityNotNull> reloaded = realm.where(SimpleEntityNotNull.class).findAll();
         stopClock(LogMessage.BATCH_READ);
 
         // as Realm is not actually loading data, just referencing it,
@@ -186,7 +186,7 @@ public class PerfTestRealm extends BasePerfTestCase {
 
     private void deleteAll() {
         realm.beginTransaction();
-        realm.allObjects(SimpleEntityNotNull.class).clear();
+        realm.delete(SimpleEntityNotNull.class);
         realm.commitTransaction();
     }
 }
