@@ -22,7 +22,7 @@ public class PerfTestRequery extends BasePerfTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        getApplication().deleteDatabase(Models.DEFAULT.name());
+        getApplication().deleteDatabase(Models.DEFAULT.getName());
 
         super.tearDown();
     }
@@ -179,7 +179,7 @@ public class PerfTestRequery extends BasePerfTestCase {
         for (int i = 0; i < reloaded.size(); i++) {
             SimpleEntityNotNull entity = reloaded.get(i);
             long id = entity.getId();
-            boolean simpleBoolean = entity.getSimpleBoolean();
+            boolean simpleBoolean = entity.isSimpleBoolean();
             byte simpleByte = entity.getSimpleByte();
             short simpleShort = entity.getSimpleShort();
             int simpleInt = entity.getSimpleInt();
