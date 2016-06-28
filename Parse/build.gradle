@@ -1,17 +1,10 @@
 buildscript {
-    repositories {
-        jcenter()
-        maven { url 'https://maven.parse.com/repo' }
-    }
-
     dependencies {
         classpath dep.androidPlugin
-        classpath 'com.parse.tools:gradle:1.1'
     }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.parse'
 
 android {
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -28,6 +21,6 @@ android {
 
 dependencies {
     androidTestCompile project(':Common')
-    compile 'com.parse:parse-android:1.13.0'
+    compile 'com.parse:parse-android:1.13.1'
 }
 
