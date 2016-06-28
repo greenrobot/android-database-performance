@@ -21,10 +21,18 @@ android {
     }
 }
 
+apt {
+    arguments {
+        squidbOptions 'androidModels'
+    }
+}
+
+def squidbVersion = '3.0.0'
+
 dependencies {
     androidTestCompile project(':Common')
-    def squidbVersion = '2.0.2'
     compile "com.yahoo.squidb:squidb:$squidbVersion"
     compile "com.yahoo.squidb:squidb-annotations:$squidbVersion"
+    compile "com.yahoo.squidb:squidb-android:$squidbVersion"
     apt "com.yahoo.squidb:squidb-processor:$squidbVersion"
 }
