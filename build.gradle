@@ -24,6 +24,6 @@ ext {
     targetSdkVersion = 19
 
     dep = [
-            androidPlugin: 'com.android.tools.build:gradle:1.5.0'
+            androidPlugin: 'com.android.tools.build:gradle:2.1.2'
     ]
 }
