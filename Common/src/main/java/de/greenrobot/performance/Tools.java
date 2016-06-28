@@ -52,12 +52,9 @@ public class Tools {
             }
 
             results.append(getMessage(LogMessage.values()[type])).append("\n");
-            long sum = 0;
             for (Long measurement : typeMeasurements) {
-                sum += measurement;
                 results.append(measurement).append("\n");
             }
-            results.append(sum / typeMeasurements.size()).append(" AVERAGE").append("\n");
             results.append(getMedian(typeMeasurements)).append(" MEDIAN").append("\n");
             results.append("\n");
         }
