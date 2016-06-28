@@ -13,6 +13,7 @@ import java.util.Map;
 public class Tools {
 
     public static final int DEFAULT_BATCH_SIZE = 10000;
+    public static final int ONE_BY_ONE_MODIFIER = 10;
     public static final int DEFAULT_QUERY_COUNT = 1000;
 
     private final String logTag;
@@ -129,7 +130,7 @@ public class Tools {
     }
 
     public int getOneByOneCount() {
-        return getBatchSize() / 10;
+        return getBatchSize() / ONE_BY_ONE_MODIFIER;
     }
 
     private int getBatchSize() {

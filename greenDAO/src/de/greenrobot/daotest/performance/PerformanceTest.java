@@ -46,6 +46,10 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
         return Tools.DEFAULT_BATCH_SIZE;
     }
 
+    public static int getOneByOneCount() {
+        return getBatchSize() / Tools.ONE_BY_ONE_MODIFIER;
+    }
+
     protected abstract String getLogTag();
 
     public void testOneByOneCrud() throws Exception {
@@ -59,7 +63,7 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
             clearIdentityScopeIfAny();
-            oneByOneCrudRun(getBatchSize() / 100);
+            oneByOneCrudRun(getOneByOneCount());
         }
         tools.logResults();
         log("--------One-by-one CRUD: End");
