@@ -1,9 +1,11 @@
 package de.greenrobot.performance.squidb;
 
 import android.content.Context;
+import com.yahoo.squidb.android.AndroidOpenHelper;
+import com.yahoo.squidb.data.ISQLiteDatabase;
+import com.yahoo.squidb.data.ISQLiteOpenHelper;
 import com.yahoo.squidb.data.SquidDatabase;
 import com.yahoo.squidb.data.TableModel;
-import com.yahoo.squidb.data.adapter.SQLiteDatabaseWrapper;
 import com.yahoo.squidb.sql.Index;
 import com.yahoo.squidb.sql.Table;
 
@@ -12,13 +14,16 @@ public class MySquidDatabase extends SquidDatabase {
     public static final String DATABASE_NAME = "sqldelight.db";
     private static final int DATABASE_VERSION = 1;
 
+    private Context context;
+
     /**
      * Create a new SquidDatabase
      *
      * @param context the Context, must not be null
      */
     public MySquidDatabase(Context context) {
-        super(context);
+        super();
+        this.context = context;
     }
 
     @Override
@@ -44,8 +49,14 @@ public class MySquidDatabase extends SquidDatabase {
     }
 
     @Override
-    protected boolean onUpgrade(SQLiteDatabaseWrapper db, int oldVersion, int newVersion) {
+    protected boolean onUpgrade(ISQLiteDatabase db, int oldVersion, int newVersion) {
         return false;
+    }
+
+    @Override
+    protected ISQLiteOpenHelper createOpenHelper(String databaseName,
+            OpenHelperDelegate delegate, int version) {
+        return new AndroidOpenHelper(context, databaseName, delegate, version);
     }
 
     /**

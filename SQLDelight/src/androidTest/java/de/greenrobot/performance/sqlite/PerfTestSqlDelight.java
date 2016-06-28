@@ -194,7 +194,7 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
 
     protected static ContentValues createEntity(long id) {
         byte[] bytes = { 42, -17, 23, 0, 127, -128 };
-        return new SimpleEntityNotNull.Marshal()
+        return SimpleEntityNotNull.FACTORY.marshal()
                 ._id(id)
                 .simple_boolean(true)
                 .simple_byte(Byte.MAX_VALUE)

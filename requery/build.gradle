@@ -1,12 +1,8 @@
 buildscript {
     dependencies {
         classpath dep.androidPlugin
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath dep.aptPlugin
     }
-}
-
-repositories {
-    maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
 }
 
 apply plugin: 'com.android.application'
@@ -29,9 +25,10 @@ android {
     }
 }
 
+def requeryVersion = '1.0.0-beta16'
+
 dependencies {
     androidTestCompile project(':Common')
-    def requeryVersion = '1.0.0-beta11'
     compile "io.requery:requery:${requeryVersion}"
     compile "io.requery:requery-android:${requeryVersion}"
     apt "io.requery:requery-processor:${requeryVersion}"

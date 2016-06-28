@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         classpath dep.androidPlugin
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath dep.aptPlugin
     }
 }
 
@@ -25,7 +25,7 @@ android {
     }
 }
 
-def dbflow_version = "3.0.0-beta6"
+def dbflow_version = "3.0.1"
 
 dependencies {
     androidTestCompile project(':Common')

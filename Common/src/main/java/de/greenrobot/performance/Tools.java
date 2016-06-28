@@ -13,6 +13,7 @@ import java.util.Map;
 public class Tools {
 
     public static final int DEFAULT_BATCH_SIZE = 10000;
+    public static final int ONE_BY_ONE_MODIFIER = 10;
     public static final int DEFAULT_QUERY_COUNT = 1000;
 
     private final String logTag;
@@ -52,12 +53,9 @@ public class Tools {
             }
 
             results.append(getMessage(LogMessage.values()[type])).append("\n");
-            long sum = 0;
             for (Long measurement : typeMeasurements) {
-                sum += measurement;
                 results.append(measurement).append("\n");
             }
-            results.append(sum / typeMeasurements.size()).append(" AVERAGE").append("\n");
             results.append(getMedian(typeMeasurements)).append(" MEDIAN").append("\n");
             results.append("\n");
         }
@@ -132,7 +130,7 @@ public class Tools {
     }
 
     public int getOneByOneCount() {
-        return getBatchSize() / 10;
+        return getBatchSize() / ONE_BY_ONE_MODIFIER;
     }
 
     private int getBatchSize() {
