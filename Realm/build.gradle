@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         classpath dep.androidPlugin
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath dep.aptPlugin
         classpath 'io.realm:realm-gradle-plugin:1.0.0'
     }
 }
