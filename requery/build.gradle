@@ -25,7 +25,7 @@ android {
     }
 }
 
-def requeryVersion = '1.0.0-beta16'
+def requeryVersion = '1.0.0-beta23'
 
 dependencies {
     androidTestCompile project(':Common')

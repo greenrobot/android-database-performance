@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="donotremove">Do not remove or build will break.</string>
+
+</resources>
