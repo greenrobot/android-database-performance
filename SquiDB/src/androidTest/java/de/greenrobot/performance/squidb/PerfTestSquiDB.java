@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class PerfTestSquiDB extends BasePerfTestCase {
 
+    private MySquidDatabase database;
+
     @Override
     protected void tearDown() throws Exception {
         getApplication().deleteDatabase(MySquidDatabase.DATABASE_NAME);
@@ -77,20 +79,16 @@ public class PerfTestSquiDB extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
-        // set up database
-        MySquidDatabase database = new MySquidDatabase(getApplication());
-        log("Set up database.");
+    protected void onRunSetup(String runName) throws Exception {
+        super.onRunSetup(runName);
 
         // set up database
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(database, getOneByOneCount());
-            batchCrudRun(database, getBatchSize());
-        }
+        database = new MySquidDatabase(getApplication());
+        log("Set up database.");
     }
 
-    private void oneByOneCrudRun(MySquidDatabase database, int count) throws SQLException {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));
@@ -116,8 +114,8 @@ public class PerfTestSquiDB extends BasePerfTestCase {
         deleteAll(database);
     }
 
-    @SuppressWarnings("unused")
-    private void batchCrudRun(MySquidDatabase database, int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));

@@ -30,6 +30,7 @@ public class PerfTestFirebase extends BasePerfTestCase {
 
     private Firebase rootFirebaseRef;
     private List<SimpleEntityNotNull> reloaded;
+    private Firebase simpleEntityRef;
 
     @Override
     protected int getQueryCount() {
@@ -147,18 +148,13 @@ public class PerfTestFirebase extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
+    protected void onRunSetup(String runName) throws Exception {
         // set up node for entities
-        Firebase simpleEntityRef = rootFirebaseRef.child("simpleEntities");
-
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(simpleEntityRef, getOneByOneCount());
-            batchCrudRun(simpleEntityRef, getBatchSize());
-        }
+        simpleEntityRef = rootFirebaseRef.child("simpleEntities");
     }
 
-    private void oneByOneCrudRun(Firebase simpleEntityRef, int count) throws Exception {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));
@@ -183,8 +179,8 @@ public class PerfTestFirebase extends BasePerfTestCase {
         deleteAll(simpleEntityRef);
     }
 
-    private void batchCrudRun(Firebase simpleEntityRef, final int count)
-            throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));

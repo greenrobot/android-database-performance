@@ -115,15 +115,7 @@ public class PerfTestCouchbase extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(getOneByOneCount());
-            batchCrudRun(getBatchSize());
-        }
-    }
-
-    private void oneByOneCrudRun(int count) throws CouchbaseLiteException {
+    protected void doOneByOneCrudRun(int count) throws Exception {
         // precreate property maps for documents
         List<Map<String, Object>> maps = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
@@ -154,7 +146,8 @@ public class PerfTestCouchbase extends BasePerfTestCase {
         deleteAll();
     }
 
-    private void batchCrudRun(int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         // precreate property maps for documents
         List<Map<String, Object>> maps = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {

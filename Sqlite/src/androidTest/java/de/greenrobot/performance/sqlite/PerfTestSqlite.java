@@ -19,6 +19,7 @@ public class PerfTestSqlite extends BasePerfTestCase {
 
     private static final String DATABASE_NAME = "sqlite.db";
     private static final int DATABASE_VERSION = 1;
+    private SQLiteDatabase database;
 
     @Override
     protected void tearDown() throws Exception {
@@ -99,19 +100,16 @@ public class PerfTestSqlite extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
+    protected void onRunSetup(String runName) throws Exception {
+        super.onRunSetup(runName);
+
         // set up database
         DbHelper dbHelper = new DbHelper(getApplication(), DATABASE_NAME, DATABASE_VERSION);
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(database, getOneByOneCount());
-            batchCrudRun(database, getBatchSize());
-        }
+        database = dbHelper.getWritableDatabase();
     }
 
-    private void oneByOneCrudRun(SQLiteDatabase database, int count) throws SQLException {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));
@@ -142,7 +140,8 @@ public class PerfTestSqlite extends BasePerfTestCase {
         deleteAll(database);
     }
 
-    private void batchCrudRun(SQLiteDatabase database, int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));

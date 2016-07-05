@@ -7,7 +7,6 @@ import com.activeandroid.query.Select;
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.StringGenerator;
 import de.greenrobot.performance.Tools.LogMessage;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,22 +89,19 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
+    protected void onRunSetup(String runName) throws Exception {
+        super.onRunSetup(runName);
+
         // set up database
         Configuration dbConfiguration = new Configuration.Builder(getContext())
                 .setDatabaseName(DATABASE_NAME)
                 .addModelClass(SimpleEntityNotNull.class)
                 .create();
         ActiveAndroid.initialize(dbConfiguration);
-
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(getOneByOneCount());
-            batchCrudRun(getBatchSize());
-        }
     }
 
-    private void oneByOneCrudRun(int count) throws SQLException {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity());
@@ -126,16 +122,17 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
         deleteAll();
     }
 
-    private void batchCrudRun(int entityCount) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
-        for (int i = 0; i < entityCount; i++) {
+        for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity());
         }
 
         startClock();
         ActiveAndroid.beginTransaction();
         try {
-            for (int i = 0; i < entityCount; i++) {
+            for (int i = 0; i < count; i++) {
                 list.get(i).save();
             }
             ActiveAndroid.setTransactionSuccessful();
@@ -147,7 +144,7 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
         startClock();
         ActiveAndroid.beginTransaction();
         try {
-            for (int i = 0; i < entityCount; i++) {
+            for (int i = 0; i < count; i++) {
                 list.get(i).save();
             }
             ActiveAndroid.setTransactionSuccessful();

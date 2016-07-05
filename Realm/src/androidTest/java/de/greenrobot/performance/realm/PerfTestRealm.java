@@ -106,15 +106,7 @@ public class PerfTestRealm extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(getOneByOneCount());
-            batchCrudRun(getBatchSize());
-        }
-    }
-
-    private void oneByOneCrudRun(int count) throws SQLException {
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));
@@ -139,7 +131,8 @@ public class PerfTestRealm extends BasePerfTestCase {
         deleteAll();
     }
 
-    private void batchCrudRun(int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));

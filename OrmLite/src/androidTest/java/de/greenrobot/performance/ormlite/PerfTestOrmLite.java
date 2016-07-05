@@ -16,6 +16,7 @@ public class PerfTestOrmLite extends BasePerfTestCase {
 
     private boolean inMemory = false;
     private DbHelper dbHelper;
+    private Dao<SimpleEntityNotNull, Long> dao;
 
     @Override
     protected void setUp() throws Exception {
@@ -102,18 +103,14 @@ public class PerfTestOrmLite extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
-        Dao<SimpleEntityNotNull, Long> dao = dbHelper.getDao(SimpleEntityNotNull.class);
+    protected void onRunSetup(String runName) throws Exception {
+        super.onRunSetup(runName);
 
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(dao, getOneByOneCount());
-            batchCrudRun(dao, getBatchSize());
-        }
+        dao = dbHelper.getDao(SimpleEntityNotNull.class);
     }
 
-    private void oneByOneCrudRun(Dao<SimpleEntityNotNull, Long> dao, int count)
-            throws SQLException {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));
@@ -134,8 +131,8 @@ public class PerfTestOrmLite extends BasePerfTestCase {
         deleteAll();
     }
 
-    private void batchCrudRun(final Dao<SimpleEntityNotNull, Long> dao, int count)
-            throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));

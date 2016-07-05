@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.StringGenerator;
 import de.greenrobot.performance.Tools;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +13,8 @@ import java.util.List;
  * https://github.com/square/sqldelight
  */
 public class PerfTestSqlDelight extends BasePerfTestCase {
+
+    private SQLiteDatabase database;
 
     @Override
     protected void tearDown() throws Exception {
@@ -86,21 +87,17 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
+    protected void onRunSetup(String runName) throws Exception {
+        super.onRunSetup(runName);
+
         // set up database
         SqlDelightDbHelper dbHelper = new SqlDelightDbHelper(getApplication());
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        database = dbHelper.getWritableDatabase();
         log("Set up database.");
-
-        // set up database
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(database, getOneByOneCount());
-            batchCrudRun(database, getBatchSize());
-        }
     }
 
-    private void oneByOneCrudRun(SQLiteDatabase database, int count) throws SQLException {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<ContentValues> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));
@@ -124,7 +121,8 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
         deleteAll(database);
     }
 
-    private void batchCrudRun(SQLiteDatabase database, int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<ContentValues> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));

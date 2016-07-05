@@ -101,20 +101,17 @@ public class PerfTestParse extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
+    protected void onRunSetup(String runName) throws Exception {
+        super.onRunSetup(runName);
+
         // set up parse inside of test
         // setting it up in setUp() breaks Parse, as it keeps its init state between tests
         // in hidden ParsePlugins
         setupParse();
-
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(getOneByOneCount());
-            batchCrudRun(getBatchSize());
-        }
     }
 
-    private void oneByOneCrudRun(int count) throws ParseException {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         List<ParseObject> list = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             list.add(createEntity(i));
@@ -135,7 +132,8 @@ public class PerfTestParse extends BasePerfTestCase {
         deleteAll();
     }
 
-    private void batchCrudRun(int count) throws ParseException {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         List<ParseObject> list = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             list.add(createEntity(i));

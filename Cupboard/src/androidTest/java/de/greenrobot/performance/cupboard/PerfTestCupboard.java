@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.StringGenerator;
 import de.greenrobot.performance.Tools.LogMessage;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import nl.qbusict.cupboard.Cupboard;
@@ -22,6 +21,7 @@ public class PerfTestCupboard extends BasePerfTestCase {
     private static final int DATABASE_VERSION = 1;
 
     private Cupboard cupboard;
+    private DatabaseCompartment database;
 
     @Override
     protected void setUp() throws Exception {
@@ -91,20 +91,17 @@ public class PerfTestCupboard extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
+    protected void onRunSetup(String runName) throws Exception {
+        super.onRunSetup(runName);
+
         // set up database
         cupboard.register(SimpleEntityNotNull.class);
         DbHelper dbHelper = new DbHelper(getApplication(), DATABASE_NAME, DATABASE_VERSION);
-        DatabaseCompartment database = cupboard.withDatabase(dbHelper.getWritableDatabase());
-
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(database, getOneByOneCount());
-            batchCrudRun(database, getBatchSize());
-        }
+        database = cupboard.withDatabase(dbHelper.getWritableDatabase());
     }
 
-    private void oneByOneCrudRun(DatabaseCompartment database, int count) throws SQLException {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));
@@ -125,8 +122,8 @@ public class PerfTestCupboard extends BasePerfTestCase {
         deleteAll(database);
     }
 
-    private void batchCrudRun(DatabaseCompartment database, int count)
-            throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));

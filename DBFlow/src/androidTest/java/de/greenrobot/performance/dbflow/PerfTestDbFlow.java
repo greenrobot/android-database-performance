@@ -100,15 +100,7 @@ public class PerfTestDbFlow extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-//            oneByOneCrudRun(getOneByOneCount());
-            batchCrudRun(getBatchSize());
-        }
-    }
-
-    private void oneByOneCrudRun(int count) throws SQLException {
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));
@@ -129,8 +121,8 @@ public class PerfTestDbFlow extends BasePerfTestCase {
         deleteAll();
     }
 
-    @SuppressWarnings("unused")
-    private void batchCrudRun(int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));

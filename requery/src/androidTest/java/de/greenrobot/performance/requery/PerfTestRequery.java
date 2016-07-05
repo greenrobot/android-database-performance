@@ -20,6 +20,7 @@ import java.util.List;
 public class PerfTestRequery extends BasePerfTestCase {
 
     private static final int DATABASE_VERSION = 1;
+    private BlockingEntityStore<Object> database;
 
     @Override
     protected void tearDown() throws Exception {
@@ -28,24 +29,24 @@ public class PerfTestRequery extends BasePerfTestCase {
         super.tearDown();
     }
 
-    @Override
-    protected void doIndexedStringEntityQueries() throws Exception {
-        // set up database
-        BlockingEntityStore<Object> data = getData();
-        log("Set up database.");
-
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            indexedStringEntityQueriesRun(data, getBatchSize());
-        }
-    }
-
-    private BlockingEntityStore<Object> getData() {
+    private void setupDatabase() {
         DatabaseSource source = new DatabaseSource(getApplication(), Models.DEFAULT,
                 DATABASE_VERSION);
         Configuration configuration = new ConfigurationBuilder(source,
                 Models.DEFAULT).setEntityCache(new EmptyEntityCache()).build();
-        return new EntityDataStore<>(configuration).toBlocking();
+        database = new EntityDataStore<>(configuration).toBlocking();
+    }
+
+    @Override
+    protected void doIndexedStringEntityQueries() throws Exception {
+        // set up database
+        setupDatabase();
+        log("Set up database.");
+
+        for (int i = 0; i < RUNS; i++) {
+            log("----Run " + (i + 1) + " of " + RUNS);
+            indexedStringEntityQueriesRun(database, getBatchSize());
+        }
     }
 
     private void indexedStringEntityQueriesRun(BlockingEntityStore<Object> database, int count) {
@@ -90,20 +91,16 @@ public class PerfTestRequery extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
-        // set up database
-        BlockingEntityStore<Object> data = getData();
-        log("Set up database.");
+    protected void onRunSetup(String runName) throws Exception {
+        super.onRunSetup(runName);
 
         // set up database
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(data, getOneByOneCount());
-            batchCrudRun(data, getBatchSize());
-        }
+        setupDatabase();
+        log("Set up database.");
     }
 
-    private void oneByOneCrudRun(BlockingEntityStore<Object> database, int count) {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));
@@ -127,8 +124,8 @@ public class PerfTestRequery extends BasePerfTestCase {
         deleteAll(database);
     }
 
-    @SuppressWarnings("unused")
-    private void batchCrudRun(BlockingEntityStore<Object> database, int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));
