@@ -9,6 +9,9 @@ subprojects {
     repositories {
         jcenter()
         mavenCentral()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots'
+        }
     }
 }
 
@@ -20,7 +23,7 @@ ext {
     buildToolsVersion = '23.0.3'
     compileSdkVersion = 23
 
-    minSdkVersion = 4
+    minSdkVersion = 8
     targetSdkVersion = 19
 
     dep = [

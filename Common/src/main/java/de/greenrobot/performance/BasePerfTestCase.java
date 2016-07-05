@@ -4,6 +4,7 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 import de.greenrobot.performance.Tools.LogMessage;
 import de.greenrobot.performance.common.BuildConfig;
+import java.io.File;
 
 /**
  * Base test case including some helper methods when running a performance test.
@@ -15,6 +16,7 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
 
     protected static final int RUNS = 8;
     protected final Tools tools;
+    private Benchmark benchmark;
 
     public BasePerfTestCase() {
         super(Application.class);
@@ -67,10 +69,26 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
             return;
         }
 
+        onRunSetup("1by1-and-batch");
+
         log("--------One-by-one/Batch CRUD: Start");
-        doOneByOneAndBatchCrud();
+        for (int i = 0; i < RUNS; i++) {
+            log("----Run " + (i + 1) + " of " + RUNS);
+            doOneByOneCrudRun(getOneByOneCount());
+            doBatchCrudRun(getBatchSize());
+
+            benchmark.commit();
+        }
         tools.logResults();
         log("--------One-by-one/Batch CRUD: End");
+    }
+
+    protected void onRunSetup(String runName) throws Exception {
+        // TODO ut: can not use ext. storage root directory as M+ requires runtime permission
+        File outputFile = new File(getContext().getExternalFilesDir(null),
+                String.format("%s-%s.tsv", getLogTag(), runName));
+        benchmark = new Benchmark(outputFile);
+        benchmark.addFixedColumnDevice();
     }
 
     /**
@@ -81,16 +99,26 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
     protected abstract void doIndexedStringEntityQueries() throws Exception;
 
     /**
-     * Run one-by-one create, update. Delete all. Then batch create, update, load and access. Delete
-     * all. See existing tests for guidance.
+     * Run one-by-one create, update. Delete all. See existing tests for guidance.
      */
-    protected abstract void doOneByOneAndBatchCrud() throws Exception;
+    protected void doOneByOneCrudRun(int count) throws Exception {
+        log("doOneByOneCrudRun NOT implemented");
+    }
+
+    /**
+     * Batch create, update, load and access. Delete all. See existing tests for guidance.
+     */
+    protected void doBatchCrudRun(int count) throws Exception {
+        log("doBatchCrudRun NOT implemented");
+    }
 
     protected void startClock() {
         tools.startClock();
+        benchmark.start();
     }
 
     protected void stopClock(LogMessage type) {
+        benchmark.stop(type.name());
         tools.stopClock(type);
     }
 
