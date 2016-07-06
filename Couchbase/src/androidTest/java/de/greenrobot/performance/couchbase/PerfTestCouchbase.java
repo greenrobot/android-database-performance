@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * http://developer.couchbase.com/documentation/mobile/1.1.0/develop/training/build-first-android-app/index.html
+ * http://developer.couchbase.com/documentation/mobile/1.2/develop/training/build-first-android-app/index.html
  * https://github.com/couchbaselabs/ToDoLite-Android
  */
 public class PerfTestCouchbase extends BasePerfTestCase {
@@ -76,21 +76,16 @@ public class PerfTestCouchbase extends BasePerfTestCase {
             throws CouchbaseLiteException {
         // create entities
         String[] fixedRandomStrings = StringGenerator.createFixedRandomStrings(count);
-        database.beginTransaction();
         for (int i = 0; i < count; i++) {
             Document entity = database.getDocument(String.valueOf(i));
             Map<String, Object> properties = new HashMap<>();
             properties.put("indexedString", fixedRandomStrings[i]);
             entity.putProperties(properties);
         }
-        database.endTransaction(true);
         log("Built and inserted entities.");
 
         // query for entities by indexed string at random
         int[] randomIndices = StringGenerator.getFixedRandomIndices(getQueryCount(), count - 1);
-
-        // clear the document cache to force loading properties from the database
-        database.clearDocumentCache();
 
         startClock();
         for (int i = 0; i < getQueryCount(); i++) {
@@ -119,7 +114,9 @@ public class PerfTestCouchbase extends BasePerfTestCase {
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
             oneByOneCrudRun(getOneByOneCount());
-            batchCrudRun(getBatchSize());
+            // couchbase 1.2 has removed transaction support, do not run batch test
+            // (only available for conflict resolution now)
+//            batchCrudRun(getBatchSize());
         }
     }
 
@@ -163,18 +160,15 @@ public class PerfTestCouchbase extends BasePerfTestCase {
 
         startClock();
         List<Document> documents = new ArrayList<>(count);
-        database.beginTransaction();
         for (int i = 0; i < count; i++) {
             // use our own ids (use .createDocument() for random UUIDs)
             Document document = database.getDocument(String.valueOf(i));
             document.putProperties(maps.get(i));
             documents.add(document);
         }
-        database.endTransaction(true);
         stopClock(LogMessage.BATCH_CREATE);
 
         startClock();
-        database.beginTransaction();
         for (int i = 0; i < count; i++) {
             Document document = documents.get(i);
             Map<String, Object> updatedProperties = new HashMap<>();
@@ -183,11 +177,7 @@ public class PerfTestCouchbase extends BasePerfTestCase {
             updatedProperties.putAll(maps.get(i));
             document.putProperties(updatedProperties);
         }
-        database.endTransaction(true);
         stopClock(LogMessage.BATCH_UPDATE);
-
-        // clear the document cache to force loading properties from the database
-        database.clearDocumentCache();
 
         startClock();
         List<Document> reloaded = new ArrayList<>();
@@ -223,12 +213,10 @@ public class PerfTestCouchbase extends BasePerfTestCase {
         // query all documents, mark them as deleted
         Query query = database.createAllDocumentsQuery();
         QueryEnumerator result = query.run();
-        database.beginTransaction();
         while (result.hasNext()) {
             QueryRow row = result.next();
             row.getDocument().purge();
         }
-        database.endTransaction(true);
     }
 
     private Map<String, Object> createDocumentMap(int seed) throws CouchbaseLiteException {
