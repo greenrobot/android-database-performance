@@ -17,8 +17,8 @@
  */
 package de.greenrobot.daotest.performance;
 
-import de.greenrobot.dao.AbstractDao;
-import de.greenrobot.dao.test.AbstractDaoTest;
+import org.greenrobot.greendao.AbstractDao;
+import org.greenrobot.greendao.test.AbstractDaoTest;
 import de.greenrobot.performance.Tools;
 import de.greenrobot.performance.Tools.LogMessage;
 import de.greenrobot.performance.common.BuildConfig;

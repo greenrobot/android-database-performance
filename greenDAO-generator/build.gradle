@@ -9,5 +9,5 @@ sourceSets {
 }
 
 dependencies {
-    compile 'de.greenrobot:greendao-generator:2.1.0'
+    compile 'org.greenrobot:greendao-generator:3.0.0'
 }
