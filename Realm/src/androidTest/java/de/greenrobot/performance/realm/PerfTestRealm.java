@@ -147,13 +147,13 @@ public class PerfTestRealm extends BasePerfTestCase {
 
         startClock();
         realm.beginTransaction();
-        realm.copyToRealm(list);
+        realm.insert(list);
         realm.commitTransaction();
         stopClock(LogMessage.BATCH_CREATE);
 
         startClock();
         realm.beginTransaction();
-        realm.copyToRealmOrUpdate(list);
+        realm.insertOrUpdate(list);
         realm.commitTransaction();
         stopClock(LogMessage.BATCH_UPDATE);
 
