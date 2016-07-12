@@ -245,6 +245,7 @@ public class Benchmark {
         }
     }
 
+    // Note: order determines the order in logResults()
     public enum Type {
         QUERY_INDEXED,
         ONE_BY_ONE_CREATE,
