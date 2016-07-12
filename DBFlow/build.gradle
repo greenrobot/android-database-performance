@@ -25,7 +25,7 @@ android {
     }
 }
 
-def dbflow_version = "3.0.1"
+def dbflow_version = "3.1.1"
 
 dependencies {
     androidTestCompile project(':Common')
