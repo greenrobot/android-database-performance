@@ -20,9 +20,10 @@ package de.greenrobot.daotest.performance;
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.test.AbstractDaoTest;
 import de.greenrobot.performance.BasePerfTestCase;
-import de.greenrobot.performance.Tools;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.Benchmark.Type;
 import de.greenrobot.performance.common.BuildConfig;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +37,10 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
         extends AbstractDaoTest<D, T, K> {
 
     private static final int RUNS = BasePerfTestCase.RUNS;
-    private final Tools tools;
+    private Benchmark benchmark;
 
     public PerformanceTest(Class<D> daoClass) {
         super(daoClass, false);
-        tools = new Tools(getLogTag(), getBatchSize(), 0);
     }
 
     public static int getBatchSize() {
@@ -60,13 +60,17 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
             return;
         }
 
+        setUpBenchmark("1by1");
+
         log("--------One-by-one CRUD: Start");
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
             clearIdentityScopeIfAny();
             oneByOneCrudRun(getOneByOneCount());
+
+            benchmark.commit();
         }
-        tools.logResults();
+        benchmark.logResults();
         log("--------One-by-one CRUD: End");
     }
 
@@ -77,14 +81,26 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
             return;
         }
 
+        setUpBenchmark("batch");
+
         log("--------Batch CRUD: Start");
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
             clearIdentityScopeIfAny();
             batchCrudRun(getBatchSize());
+
+            benchmark.commit();
         }
-        tools.logResults();
+        benchmark.logResults();
         log("--------Batch CRUD: End");
+    }
+
+    private void setUpBenchmark(String runName) {
+        // TODO ut: can not use ext. storage root directory as M+ requires runtime permission
+        File outputFile = new File(getContext().getExternalFilesDir(null),
+                String.format("%s-%s.tsv", getLogTag(), runName));
+        benchmark = new Benchmark(outputFile, getLogTag());
+        benchmark.addFixedColumnDevice().warmUpRuns(2);
     }
 
     private void oneByOneCrudRun(int count) {
@@ -157,11 +173,11 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
     }
 
     protected void startClock() {
-        tools.startClock();
+        benchmark.start();
     }
 
     protected void stopClock(Type type) {
-        tools.stopClock(type);
+        benchmark.stop(type);
     }
 
     protected abstract T createEntity();
@@ -176,6 +192,6 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
      * Convenience method to create a debug log message.
      */
     protected void log(String message) {
-        tools.log(message);
+        benchmark.log(message);
     }
 }
