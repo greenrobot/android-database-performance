@@ -7,8 +7,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools.LogMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +93,7 @@ public class PerfTestParse extends BasePerfTestCase {
             //noinspection unused
             List<IndexedStringEntity> result = query.find();
         }
-        stopClock(LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         ParseObject.unpinAll();
@@ -101,8 +101,8 @@ public class PerfTestParse extends BasePerfTestCase {
     }
 
     @Override
-    protected void onRunSetup(String runName) throws Exception {
-        super.onRunSetup(runName);
+    protected void onRunSetup() throws Exception {
+        super.onRunSetup();
 
         // set up parse inside of test
         // setting it up in setUp() breaks Parse, as it keeps its init state between tests
@@ -121,13 +121,13 @@ public class PerfTestParse extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             list.get(i).pin();
         }
-        stopClock(LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
             list.get(i).pin();
         }
-        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll();
     }
@@ -141,17 +141,17 @@ public class PerfTestParse extends BasePerfTestCase {
 
         startClock();
         ParseObject.pinAll(list);
-        stopClock(LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         startClock();
         ParseObject.pinAll(list);
-        stopClock(LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         List<ParseObject> reloaded = ParseQuery.getQuery("SimpleEntity")
                 .fromLocalDatastore()
                 .find();
-        stopClock(LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -166,11 +166,11 @@ public class PerfTestParse extends BasePerfTestCase {
             entity.getString("simpleString");
             entity.getBytes("simpleByteArray");
         }
-        stopClock(LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll();
-        stopClock(LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll() throws ParseException {

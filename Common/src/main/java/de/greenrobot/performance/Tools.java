@@ -12,10 +12,6 @@ import java.util.Map;
  */
 public class Tools {
 
-    public static final int DEFAULT_BATCH_SIZE = 10000;
-    public static final int ONE_BY_ONE_MODIFIER = 10;
-    public static final int DEFAULT_QUERY_COUNT = 1000;
-
     private final String logTag;
     private long start;
     private int batchSize;
@@ -26,7 +22,7 @@ public class Tools {
         this.logTag = logTag;
         this.batchSize = batchSize;
         this.queryCount = queryCount;
-        measurements = new HashMap<>(LogMessage.values().length);
+        measurements = new HashMap<>(Benchmark.Type.values().length);
     }
 
     /**
@@ -46,13 +42,13 @@ public class Tools {
         results.append("All values in [ms]").append("\n\n");
 
         // go through results by enum ordinal so results are sorted as expected
-        for (int type = 0; type < LogMessage.values().length; type++) {
+        for (int type = 0; type < Benchmark.Type.values().length; type++) {
             List<Long> typeMeasurements = measurements.get(type);
             if (typeMeasurements == null) {
                 continue;
             }
 
-            results.append(getMessage(LogMessage.values()[type])).append("\n");
+            results.append(getMessage(Benchmark.Type.values()[type])).append("\n");
             for (Long measurement : typeMeasurements) {
                 results.append(measurement).append("\n");
             }
@@ -71,7 +67,7 @@ public class Tools {
         start = System.currentTimeMillis();
     }
 
-    public void stopClock(LogMessage type) {
+    public void stopClock(Benchmark.Type type) {
         long time = System.currentTimeMillis() - start;
         start = 0;
 
@@ -101,7 +97,7 @@ public class Tools {
         }
     }
 
-    private String getMessage(LogMessage type) {
+    private String getMessage(Benchmark.Type type) {
         switch (type) {
             case QUERY_INDEXED:
                 return "Queried for " + getQueryCount() + " of " + getBatchSize()
@@ -130,7 +126,7 @@ public class Tools {
     }
 
     public int getOneByOneCount() {
-        return getBatchSize() / ONE_BY_ONE_MODIFIER;
+        return getBatchSize() / BasePerfTestCase.ONE_BY_ONE_MODIFIER;
     }
 
     private int getBatchSize() {
@@ -140,18 +136,4 @@ public class Tools {
     private int getQueryCount() {
         return queryCount;
     }
-
-    public enum LogMessage {
-        QUERY_INDEXED,
-        ONE_BY_ONE_CREATE,
-        ONE_BY_ONE_UPDATE,
-        ONE_BY_ONE_REFRESH,
-        ONE_BY_ONE_DELETE,
-        BATCH_CREATE,
-        BATCH_UPDATE,
-        BATCH_READ,
-        BATCH_ACCESS,
-        BATCH_DELETE
-    }
-
 }

@@ -2,7 +2,7 @@ package de.greenrobot.performance;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
-import de.greenrobot.performance.Tools.LogMessage;
+import de.greenrobot.performance.Benchmark.Type;
 import de.greenrobot.performance.common.BuildConfig;
 import java.io.File;
 
@@ -14,25 +14,27 @@ import java.io.File;
  */
 public abstract class BasePerfTestCase extends ApplicationTestCase<Application> {
 
-    protected static final int RUNS = 8;
-    protected final Tools tools;
+    public static final int DEFAULT_BATCH_SIZE = 10000;
+    public static final int ONE_BY_ONE_MODIFIER = 10;
+    public static final int DEFAULT_QUERY_COUNT = 1000;
+    public static final int RUNS = 8;
+
     private Benchmark benchmark;
 
     public BasePerfTestCase() {
         super(Application.class);
-        this.tools = new Tools(getLogTag(), getBatchSize(), getQueryCount());
     }
 
     protected int getBatchSize() {
-        return Tools.DEFAULT_BATCH_SIZE;
+        return DEFAULT_BATCH_SIZE;
     }
 
     protected int getOneByOneCount() {
-        return tools.getOneByOneCount();
+        return getBatchSize() / ONE_BY_ONE_MODIFIER;
     }
 
     protected int getQueryCount() {
-        return Tools.DEFAULT_QUERY_COUNT;
+        return DEFAULT_QUERY_COUNT;
     }
 
     /**
@@ -56,9 +58,12 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
             return;
         }
 
+        onRunSetup();
+        setUpBenchmark("indexed-query");
+
         log("--------Indexed Queries: Start");
         doIndexedStringEntityQueries();
-        tools.logResults();
+        benchmark.logResults();
         log("--------Indexed Queries: End");
     }
 
@@ -69,7 +74,8 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
             return;
         }
 
-        onRunSetup("1by1-and-batch");
+        onRunSetup();
+        setUpBenchmark("1by1-and-batch");
 
         log("--------One-by-one/Batch CRUD: Start");
         for (int i = 0; i < RUNS; i++) {
@@ -79,15 +85,19 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
 
             benchmark.commit();
         }
-        tools.logResults();
+        benchmark.logResults();
         log("--------One-by-one/Batch CRUD: End");
     }
 
-    protected void onRunSetup(String runName) throws Exception {
+    protected void onRunSetup() throws Exception {
+        // no additional setup
+    }
+
+    private void setUpBenchmark(String runName) {
         // TODO ut: can not use ext. storage root directory as M+ requires runtime permission
         File outputFile = new File(getContext().getExternalFilesDir(null),
                 String.format("%s-%s.tsv", getLogTag(), runName));
-        benchmark = new Benchmark(outputFile);
+        benchmark = new Benchmark(outputFile, getLogTag());
         benchmark.addFixedColumnDevice();
     }
 
@@ -96,7 +106,9 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
      * StringGenerator#createFixedRandomStrings(int)}. Then query for the fixed set of indexes given
      * by {@link StringGenerator#getFixedRandomIndices(int, int)}. See existing tests for guidance.
      */
-    protected abstract void doIndexedStringEntityQueries() throws Exception;
+    protected void doIndexedStringEntityQueries() throws Exception {
+        log("doIndexedStringEntityQueries NOT implemented");
+    }
 
     /**
      * Run one-by-one create, update. Delete all. See existing tests for guidance.
@@ -113,19 +125,17 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
     }
 
     protected void startClock() {
-        tools.startClock();
         benchmark.start();
     }
 
-    protected void stopClock(LogMessage type) {
-        benchmark.stop(type.name());
-        tools.stopClock(type);
+    protected void stopClock(Type type) {
+        benchmark.stop(type);
     }
 
     /**
      * Convenience method to create a debug log message.
      */
     protected void log(String message) {
-        tools.log(message);
+        benchmark.log(message);
     }
 }

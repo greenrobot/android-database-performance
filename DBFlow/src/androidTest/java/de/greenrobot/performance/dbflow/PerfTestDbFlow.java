@@ -12,14 +12,13 @@ import com.raizlabs.android.dbflow.structure.ModelAdapter;
 import com.raizlabs.android.dbflow.structure.database.transaction.FastStoreModelTransaction;
 import com.raizlabs.android.dbflow.structure.database.transaction.ITransaction;
 
-import java.sql.SQLException;
+import de.greenrobot.performance.Benchmark;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools.LogMessage;
 
 /**
  * https://github.com/Raizlabs/DBFlow/blob/master/usage/GettingStarted.md
@@ -80,7 +79,7 @@ public class PerfTestDbFlow extends BasePerfTestCase {
                             fixedRandomStrings[nextIndex]))
                     .querySingle();
         }
-        stopClock(LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         Delete.table(IndexedStringEntity.class);
@@ -110,13 +109,13 @@ public class PerfTestDbFlow extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             list.get(i).insert();
         }
-        stopClock(LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
             list.get(i).update();
         }
-        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll();
     }
@@ -130,17 +129,17 @@ public class PerfTestDbFlow extends BasePerfTestCase {
 
         startClock();
         FlowManager.getDatabase(FlowDatabase.class).executeTransaction(insertTransaction(list, SimpleEntityNotNull.class));
-        stopClock(LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         startClock();
         FlowManager.getDatabase(FlowDatabase.class).executeTransaction(updateTransaction(list, SimpleEntityNotNull.class));
-        stopClock(LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         List<SimpleEntityNotNull> reloaded = SQLite.select()
                 .from(SimpleEntityNotNull.class)
                 .queryList();
-        stopClock(LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -156,11 +155,11 @@ public class PerfTestDbFlow extends BasePerfTestCase {
             String simpleString = entity.simpleString;
             byte[] blob = entity.simpleByteArray.getBlob();
         }
-        stopClock(LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll();
-        stopClock(LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll() {

@@ -1,8 +1,8 @@
 package de.greenrobot.performance.requery;
 
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools;
 import io.requery.BlockingEntityStore;
 import io.requery.android.sqlite.DatabaseSource;
 import io.requery.cache.EmptyEntityCache;
@@ -83,7 +83,7 @@ public class PerfTestRequery extends BasePerfTestCase {
 
             results.close();
         }
-        stopClock(Tools.LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         database.delete(IndexedStringEntity.class).get().value();
@@ -91,8 +91,8 @@ public class PerfTestRequery extends BasePerfTestCase {
     }
 
     @Override
-    protected void onRunSetup(String runName) throws Exception {
-        super.onRunSetup(runName);
+    protected void onRunSetup() throws Exception {
+        super.onRunSetup();
 
         // set up database
         setupDatabase();
@@ -110,7 +110,7 @@ public class PerfTestRequery extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             database.insert(list.get(i));
         }
-        stopClock(Tools.LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         // requery detects changes, so modify all entities before updating them
         modifyEntities(list);
@@ -119,7 +119,7 @@ public class PerfTestRequery extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             database.update(list.get(i));
         }
-        stopClock(Tools.LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll(database);
     }
@@ -133,20 +133,20 @@ public class PerfTestRequery extends BasePerfTestCase {
 
         startClock();
         database.insert(list);
-        stopClock(Tools.LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         // requery detects changes, so modify all entities before updating them
         modifyEntities(list);
 
         startClock();
         database.update(list);
-        stopClock(Tools.LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         Result<SimpleEntityNotNull> results = database.select(SimpleEntityNotNull.class).get();
         List<SimpleEntityNotNull> reloaded = results.toList();
         results.close();
-        stopClock(Tools.LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -162,11 +162,11 @@ public class PerfTestRequery extends BasePerfTestCase {
             String simpleString = entity.getSimpleString();
             byte[] simpleByteArray = entity.getSimpleByteArray();
         }
-        stopClock(Tools.LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll(database);
-        stopClock(Tools.LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll(BlockingEntityStore<Object> database) {

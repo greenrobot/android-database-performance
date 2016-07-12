@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools.LogMessage;
 import java.util.ArrayList;
 import java.util.List;
 import nl.qbusict.cupboard.Cupboard;
@@ -83,7 +83,7 @@ public class PerfTestCupboard extends BasePerfTestCase {
                     .withSelection("indexedString = ?", fixedRandomStrings[nextIndex])
                     .list();
         }
-        stopClock(LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         database.delete(IndexedStringEntity.class, "");
@@ -91,8 +91,8 @@ public class PerfTestCupboard extends BasePerfTestCase {
     }
 
     @Override
-    protected void onRunSetup(String runName) throws Exception {
-        super.onRunSetup(runName);
+    protected void onRunSetup() throws Exception {
+        super.onRunSetup();
 
         // set up database
         cupboard.register(SimpleEntityNotNull.class);
@@ -111,13 +111,13 @@ public class PerfTestCupboard extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             database.put(list.get(i));
         }
-        stopClock(LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
             database.put(list.get(i));
         }
-        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll(database);
     }
@@ -131,15 +131,15 @@ public class PerfTestCupboard extends BasePerfTestCase {
 
         startClock();
         database.put(list);
-        stopClock(LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         startClock();
         database.put(list);
-        stopClock(LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         List<SimpleEntityNotNull> reloaded = database.query(SimpleEntityNotNull.class).list();
-        stopClock(LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -155,11 +155,11 @@ public class PerfTestCupboard extends BasePerfTestCase {
             entity.getSimpleString();
             entity.getSimpleByteArray();
         }
-        stopClock(LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll(database);
-        stopClock(LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll(DatabaseCompartment database) {

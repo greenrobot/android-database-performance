@@ -2,8 +2,8 @@ package de.greenrobot.performance.ormlite;
 
 import com.j256.ormlite.dao.Dao;
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools.LogMessage;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +95,7 @@ public class PerfTestOrmLite extends BasePerfTestCase {
                     .query();
             // ORMLite already builds all entities when executing the query, so move on
         }
-        stopClock(LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         dbHelper.getWritableDatabase().execSQL("DELETE FROM INDEXED_STRING_ENTITY");
@@ -103,8 +103,8 @@ public class PerfTestOrmLite extends BasePerfTestCase {
     }
 
     @Override
-    protected void onRunSetup(String runName) throws Exception {
-        super.onRunSetup(runName);
+    protected void onRunSetup() throws Exception {
+        super.onRunSetup();
 
         dao = dbHelper.getDao(SimpleEntityNotNull.class);
     }
@@ -120,13 +120,13 @@ public class PerfTestOrmLite extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             dao.create(list.get(i));
         }
-        stopClock(LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
             dao.update(list.get(i));
         }
-        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll();
     }
@@ -149,7 +149,7 @@ public class PerfTestOrmLite extends BasePerfTestCase {
                 return null;
             }
         });
-        stopClock(LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         startClock();
         dao.callBatchTasks(new Callable<Void>() {
@@ -162,11 +162,11 @@ public class PerfTestOrmLite extends BasePerfTestCase {
                 return null;
             }
         });
-        stopClock(LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         List<SimpleEntityNotNull> reloaded = dao.queryForAll();
-        stopClock(LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -182,11 +182,11 @@ public class PerfTestOrmLite extends BasePerfTestCase {
             entity.getSimpleString();
             entity.getSimpleByteArray();
         }
-        stopClock(LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll();
-        stopClock(LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll() {

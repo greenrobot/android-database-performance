@@ -5,8 +5,8 @@ import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
 import com.activeandroid.query.Select;
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools.LogMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +81,7 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
                     .execute();
             // ActiveAndroid already builds all entities when executing the query, so move on
         }
-        stopClock(LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         ActiveAndroid.execSQL("DELETE FROM INDEXED_STRING_ENTITY");
@@ -89,8 +89,8 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
     }
 
     @Override
-    protected void onRunSetup(String runName) throws Exception {
-        super.onRunSetup(runName);
+    protected void onRunSetup() throws Exception {
+        super.onRunSetup();
 
         // set up database
         Configuration dbConfiguration = new Configuration.Builder(getContext())
@@ -111,13 +111,13 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             list.get(i).save();
         }
-        stopClock(LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
             list.get(i).save();
         }
-        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll();
     }
@@ -139,7 +139,7 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
         } finally {
             ActiveAndroid.endTransaction();
         }
-        stopClock(LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         startClock();
         ActiveAndroid.beginTransaction();
@@ -151,14 +151,14 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
         } finally {
             ActiveAndroid.endTransaction();
         }
-        stopClock(LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         List<SimpleEntityNotNull> reloaded = new Select()
                 .all()
                 .from(SimpleEntityNotNull.class)
                 .execute();
-        stopClock(LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -174,11 +174,11 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
             entity.getSimpleString();
             entity.getSimpleByteArray();
         }
-        stopClock(LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll();
-        stopClock(LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll() {

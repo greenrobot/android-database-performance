@@ -19,8 +19,9 @@ package de.greenrobot.daotest.performance;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.test.AbstractDaoTest;
+import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Tools;
-import de.greenrobot.performance.Tools.LogMessage;
+import de.greenrobot.performance.Benchmark.Type;
 import de.greenrobot.performance.common.BuildConfig;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.List;
 public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
         extends AbstractDaoTest<D, T, K> {
 
-    private static final int RUNS = 8;
+    private static final int RUNS = BasePerfTestCase.RUNS;
     private final Tools tools;
 
     public PerformanceTest(Class<D> daoClass) {
@@ -43,11 +44,11 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
     }
 
     public static int getBatchSize() {
-        return Tools.DEFAULT_BATCH_SIZE;
+        return BasePerfTestCase.DEFAULT_BATCH_SIZE;
     }
 
     public static int getOneByOneCount() {
-        return getBatchSize() / Tools.ONE_BY_ONE_MODIFIER;
+        return getBatchSize() / BasePerfTestCase.ONE_BY_ONE_MODIFIER;
     }
 
     protected abstract String getLogTag();
@@ -96,7 +97,7 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
         for (int i = 0; i < count; i++) {
             dao.insert(list.get(i));
         }
-        stopClock(LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Type.ONE_BY_ONE_CREATE);
 
         for (int i = 0; i < count; i++) {
             changeForUpdate(list.get(i));
@@ -105,19 +106,19 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
         for (int i = 0; i < count; i++) {
             dao.update(list.get(i));
         }
-        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Type.ONE_BY_ONE_UPDATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
             dao.refresh(list.get(i));
         }
-        stopClock(LogMessage.ONE_BY_ONE_REFRESH);
+        stopClock(Type.ONE_BY_ONE_REFRESH);
 
         startClock();
         for (int i = 0; i < count; i++) {
             dao.delete(list.get(i));
         }
-        stopClock(LogMessage.ONE_BY_ONE_DELETE);
+        stopClock(Type.ONE_BY_ONE_DELETE);
     }
 
     /**
@@ -135,31 +136,31 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
 
         startClock();
         dao.insertInTx(list);
-        stopClock(LogMessage.BATCH_CREATE);
+        stopClock(Type.BATCH_CREATE);
 
         for (int i = 0; i < count; i++) {
             changeForUpdate(list.get(i));
         }
         startClock();
         dao.updateInTx(list);
-        stopClock(LogMessage.BATCH_UPDATE);
+        stopClock(Type.BATCH_UPDATE);
 
         startClock();
         List<T> reloaded = dao.loadAll();
-        stopClock(LogMessage.BATCH_READ);
+        stopClock(Type.BATCH_READ);
 
         accessAll(reloaded);
 
         startClock();
         dao.deleteAll();
-        stopClock(LogMessage.BATCH_DELETE);
+        stopClock(Type.BATCH_DELETE);
     }
 
     protected void startClock() {
         tools.startClock();
     }
 
-    protected void stopClock(LogMessage type) {
+    protected void stopClock(Type type) {
         tools.stopClock(type);
     }
 

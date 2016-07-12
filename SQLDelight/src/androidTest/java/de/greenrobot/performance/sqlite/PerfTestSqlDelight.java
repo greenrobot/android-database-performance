@@ -4,8 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +79,7 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
 
             query.close();
         }
-        stopClock(Tools.LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         database.delete(IndexedStringEntity.TABLE_NAME, null, null);
@@ -87,8 +87,8 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
     }
 
     @Override
-    protected void onRunSetup(String runName) throws Exception {
-        super.onRunSetup(runName);
+    protected void onRunSetup() throws Exception {
+        super.onRunSetup();
 
         // set up database
         SqlDelightDbHelper dbHelper = new SqlDelightDbHelper(getApplication());
@@ -107,7 +107,7 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             database.insert(SimpleEntityNotNull.TABLE_NAME, null, list.get(i));
         }
-        stopClock(Tools.LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
@@ -116,7 +116,7 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
                     SimpleEntityNotNull._ID + "=" + entity.getAsLong(SimpleEntityNotNull._ID),
                     null);
         }
-        stopClock(Tools.LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll(database);
     }
@@ -138,7 +138,7 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
         } finally {
             database.endTransaction();
         }
-        stopClock(Tools.LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         startClock();
         database.beginTransaction();
@@ -153,7 +153,7 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
         } finally {
             database.endTransaction();
         }
-        stopClock(Tools.LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         List<SimpleEntityNotNull> reloaded = new ArrayList<>(count);
@@ -163,7 +163,7 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
             reloaded.add(SimpleEntityNotNull.MAPPER.map(query));
         }
         query.close();
-        stopClock(Tools.LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -179,11 +179,11 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
             entity.simple_string();
             entity.simple_byte_array();
         }
-        stopClock(Tools.LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll(database);
-        stopClock(Tools.LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll(SQLiteDatabase database) {

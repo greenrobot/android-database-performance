@@ -6,9 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools.LogMessage;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,7 +91,7 @@ public class PerfTestSqlite extends BasePerfTestCase {
 
             query.close();
         }
-        stopClock(LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         database.delete(DbHelper.Tables.INDEXED_ENTITY, null, null);
@@ -100,8 +99,8 @@ public class PerfTestSqlite extends BasePerfTestCase {
     }
 
     @Override
-    protected void onRunSetup(String runName) throws Exception {
-        super.onRunSetup(runName);
+    protected void onRunSetup() throws Exception {
+        super.onRunSetup();
 
         // set up database
         DbHelper dbHelper = new DbHelper(getApplication(), DATABASE_NAME, DATABASE_VERSION);
@@ -124,7 +123,7 @@ public class PerfTestSqlite extends BasePerfTestCase {
             database.insert(DbHelper.Tables.SIMPLE_ENTITY, null, values);
             values.clear();
         }
-        stopClock(LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
@@ -135,7 +134,7 @@ public class PerfTestSqlite extends BasePerfTestCase {
                     null);
             values.clear();
         }
-        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll(database);
     }
@@ -162,7 +161,7 @@ public class PerfTestSqlite extends BasePerfTestCase {
         } finally {
             database.endTransaction();
         }
-        stopClock(LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         startClock();
         database.beginTransaction();
@@ -180,7 +179,7 @@ public class PerfTestSqlite extends BasePerfTestCase {
         } finally {
             database.endTransaction();
         }
-        stopClock(LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         List<SimpleEntityNotNull> reloaded = new ArrayList<>(count);
@@ -201,7 +200,7 @@ public class PerfTestSqlite extends BasePerfTestCase {
             reloaded.add(entity);
         }
         query.close();
-        stopClock(LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -217,11 +216,11 @@ public class PerfTestSqlite extends BasePerfTestCase {
             entity.getSimpleString();
             entity.getSimpleByteArray();
         }
-        stopClock(LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll(database);
-        stopClock(LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll(SQLiteDatabase database) {

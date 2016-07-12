@@ -20,7 +20,7 @@ package de.greenrobot.daotest.performance;
 import de.greenrobot.daotest.SimpleEntityNotNull;
 import de.greenrobot.daotest.SimpleEntityNotNullDao;
 import de.greenrobot.daotest.entity.SimpleEntityNotNullHelper;
-import de.greenrobot.performance.Tools;
+import de.greenrobot.performance.Benchmark;
 import java.util.List;
 
 public class PerformanceTestNotNull extends PerformanceTest<SimpleEntityNotNullDao, SimpleEntityNotNull, Long> {
@@ -57,7 +57,7 @@ public class PerformanceTestNotNull extends PerformanceTest<SimpleEntityNotNullD
             entity.getSimpleString();
             entity.getSimpleByteArray();
         }
-        stopClock(Tools.LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
     }
 
 }
