@@ -2,6 +2,7 @@ package de.greenrobot.performance.sqlite;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import com.google.auto.value.AutoValue;
 import com.squareup.sqldelight.ColumnAdapter;
 import com.squareup.sqldelight.RowMapper;
@@ -29,8 +30,9 @@ public abstract class SimpleEntityNotNull implements SimpleEntityNotNullModel {
             new Creator<SimpleEntityNotNull>() {
                 @Override
                 public SimpleEntityNotNull create(long _id, boolean simple_boolean, int simple_byte,
-                        Short simple_short, int simple_int, long simple_long, float simple_float,
-                        double simple_double, String simple_string, byte[] simple_byte_array) {
+                        @NonNull Short simple_short, int simple_int, long simple_long,
+                        float simple_float, double simple_double, @NonNull String simple_string,
+                        @NonNull byte[] simple_byte_array) {
                     return new AutoValue_SimpleEntityNotNull(_id, simple_boolean, simple_byte,
                             simple_short, simple_int, simple_long, simple_float,
                             simple_double, simple_string, simple_byte_array);

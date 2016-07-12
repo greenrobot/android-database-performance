@@ -1,3 +1,5 @@
+import java.lang.Short;
+
 -- table, column and method names have to be lower case
 -- supported types: https://github.com/square/sqldelight#types
 CREATE TABLE simple_entity_not_null (

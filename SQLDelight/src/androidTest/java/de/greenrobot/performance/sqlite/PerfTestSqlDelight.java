@@ -40,7 +40,7 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
         List<ContentValues> entities = new ArrayList<>(count);
         String[] fixedRandomStrings = StringGenerator.createFixedRandomStrings(count);
         for (int i = 0; i < count; i++) {
-            ContentValues entity = new IndexedStringEntity.Marshal()
+            ContentValues entity = IndexedStringEntity.FACTORY.marshal()
                     ._id((long) i)
                     .indexed_string(fixedRandomStrings[i])
                     .asContentValues();
