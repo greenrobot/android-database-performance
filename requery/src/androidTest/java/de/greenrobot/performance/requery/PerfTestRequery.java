@@ -10,6 +10,7 @@ import io.requery.query.Result;
 import io.requery.sql.Configuration;
 import io.requery.sql.ConfigurationBuilder;
 import io.requery.sql.EntityDataStore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,15 +61,7 @@ public class PerfTestRequery extends BasePerfTestCase {
         log("Built entities.");
 
         // insert entities
-        database.transaction().begin();
-        try {
-            for (int i = 0; i < count; i++) {
-                database.insert(entities.get(i));
-            }
-            database.transaction().commit();
-        } finally {
-            database.transaction().close();
-        }
+        database.insert(entities);
         log("Inserted entities.");
 
         // query for entities by indexed string at random
@@ -142,35 +135,18 @@ public class PerfTestRequery extends BasePerfTestCase {
         }
 
         startClock();
-        database.transaction().begin();
-        try {
-            for (int i = 0; i < count; i++) {
-                database.insert(list.get(i));
-            }
-            database.transaction().commit();
-        } finally {
-            database.transaction().close();
-        }
+        database.insert(list);
         stopClock(Tools.LogMessage.BATCH_CREATE);
 
         // requery detects changes, so modify all entities before updating them
         modifyEntities(list);
 
         startClock();
-        database.transaction().begin();
-        try {
-            for (int i = 0; i < count; i++) {
-                database.update(list.get(i));
-            }
-            database.transaction().commit();
-        } finally {
-            database.transaction().close();
-        }
+        database.update(list);
         stopClock(Tools.LogMessage.BATCH_UPDATE);
 
         startClock();
-        Result<SimpleEntityNotNull> results = database.select(
-                SimpleEntityNotNull.class).get();
+        Result<SimpleEntityNotNull> results = database.select(SimpleEntityNotNull.class).get();
         List<SimpleEntityNotNull> reloaded = results.toList();
         results.close();
         stopClock(Tools.LogMessage.BATCH_READ);
@@ -211,7 +187,7 @@ public class PerfTestRequery extends BasePerfTestCase {
         entity.setSimpleFloat(Float.MAX_VALUE);
         entity.setSimpleDouble(Double.MAX_VALUE);
         entity.setSimpleString("greenrobot greenDAO");
-        byte[] bytes = { 42, -17, 23, 0, 127, -128 };
+        byte[] bytes = {42, -17, 23, 0, 127, -128};
         entity.setSimpleByteArray(bytes);
         return entity;
     }
@@ -226,7 +202,7 @@ public class PerfTestRequery extends BasePerfTestCase {
             entity.setSimpleFloat(Float.MAX_VALUE);
             entity.setSimpleDouble(Double.MAX_VALUE);
             entity.setSimpleString("greenrobot greenDAO");
-            byte[] bytes = { 42, -17, 23, 0, 127, -128 };
+            byte[] bytes = {42, -17, 23, 0, 127, -128};
             entity.setSimpleByteArray(bytes);
         }
     }
