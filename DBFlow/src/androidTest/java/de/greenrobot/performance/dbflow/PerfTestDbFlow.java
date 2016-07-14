@@ -8,10 +8,13 @@ import com.raizlabs.android.dbflow.data.Blob;
 import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.Model;
-import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
+import com.raizlabs.android.dbflow.structure.ModelAdapter;
+import com.raizlabs.android.dbflow.structure.database.transaction.FastStoreModelTransaction;
+import com.raizlabs.android.dbflow.structure.database.transaction.ITransaction;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.greenrobot.performance.BasePerfTestCase;
@@ -42,7 +45,7 @@ public class PerfTestDbFlow extends BasePerfTestCase {
     protected void doIndexedStringEntityQueries() throws Exception {
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            indexedStringEntityQueriesRun(getBatchSize());
+            //indexedStringEntityQueriesRun(getBatchSize());
         }
     }
 
@@ -59,7 +62,7 @@ public class PerfTestDbFlow extends BasePerfTestCase {
         log("Built entities.");
 
         // insert entities
-        FlowManager.getDatabase(FlowDatabase.class).executeTransaction(insertTransaction(entities));
+        FlowManager.getDatabase(FlowDatabase.class).executeTransaction(insertTransaction(entities, IndexedStringEntity.class));
 
         log("Inserted entities.");
 
@@ -85,34 +88,22 @@ public class PerfTestDbFlow extends BasePerfTestCase {
     }
 
     @NonNull
-    private <TModel extends Model> ProcessModelTransaction<TModel> insertTransaction(List<TModel> entities) {
-        return new ProcessModelTransaction.Builder<>(
-            new ProcessModelTransaction.ProcessModel<TModel>() {
-                @Override
-                public void processModel(TModel model) {
-                    model.insert();
-                }
-            }
-        ).addAll(entities).build();
+    private <TModel extends Model> ITransaction insertTransaction(Collection entities, Class<TModel> clazz) {
+        ModelAdapter<? extends Model> modelAdapter = FlowManager.getModelAdapter(clazz);
+        return FastStoreModelTransaction.insertBuilder(modelAdapter).addAll(entities).build();
     }
 
     @NonNull
-    private <TModel extends Model> ProcessModelTransaction<TModel> updateTransaction(List<TModel> entities) {
-        return new ProcessModelTransaction.Builder<>(
-            new ProcessModelTransaction.ProcessModel<TModel>() {
-                @Override
-                public void processModel(TModel model) {
-                    model.update();
-                }
-            }
-        ).addAll(entities).build();
+    private <TModel extends Model> ITransaction updateTransaction(Collection entities, Class<TModel> clazz) {
+        ModelAdapter<? extends Model> modelAdapter = FlowManager.getModelAdapter(clazz);
+        return FastStoreModelTransaction.updateBuilder(modelAdapter).addAll(entities).build();
     }
 
     @Override
     protected void doOneByOneAndBatchCrud() throws Exception {
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(getOneByOneCount());
+//            oneByOneCrudRun(getOneByOneCount());
             batchCrudRun(getBatchSize());
         }
     }
@@ -146,11 +137,11 @@ public class PerfTestDbFlow extends BasePerfTestCase {
         }
 
         startClock();
-        FlowManager.getDatabase(FlowDatabase.class).executeTransaction(insertTransaction(list));
+        FlowManager.getDatabase(FlowDatabase.class).executeTransaction(insertTransaction(list, SimpleEntityNotNull.class));
         stopClock(LogMessage.BATCH_CREATE);
 
         startClock();
-        FlowManager.getDatabase(FlowDatabase.class).executeTransaction(updateTransaction(list));
+        FlowManager.getDatabase(FlowDatabase.class).executeTransaction(updateTransaction(list, SimpleEntityNotNull.class));
         stopClock(LogMessage.BATCH_UPDATE);
 
         startClock();
@@ -191,11 +182,11 @@ public class PerfTestDbFlow extends BasePerfTestCase {
         entity.simpleByte = Byte.MAX_VALUE;
         entity.simpleShort = Short.MAX_VALUE;
         entity.simpleInt = Integer.MAX_VALUE;
-        entity.simpleLong =Long.MAX_VALUE;
+        entity.simpleLong = Long.MAX_VALUE;
         entity.simpleFloat = Float.MAX_VALUE;
         entity.simpleDouble = Double.MAX_VALUE;
         entity.simpleString = "greenrobot greenDAO";
-        byte[] bytes = { 42, -17, 23, 0, 127, -128 };
+        byte[] bytes = {42, -17, 23, 0, 127, -128};
         entity.simpleByteArray = new Blob(bytes);
         return entity;
     }
