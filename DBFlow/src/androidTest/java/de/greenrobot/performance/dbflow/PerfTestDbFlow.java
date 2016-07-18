@@ -44,7 +44,7 @@ public class PerfTestDbFlow extends BasePerfTestCase {
     protected void doIndexedStringEntityQueries() throws Exception {
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            //indexedStringEntityQueriesRun(getBatchSize());
+            indexedStringEntityQueriesRun(getBatchSize());
         }
     }
 
