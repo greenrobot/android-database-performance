@@ -3,9 +3,8 @@ package de.greenrobot.performance.squidb;
 import com.yahoo.squidb.data.SquidCursor;
 import com.yahoo.squidb.sql.Query;
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +12,8 @@ import java.util.List;
  * https://github.com/yahoo/squidb/wiki
  */
 public class PerfTestSquiDB extends BasePerfTestCase {
+
+    private MySquidDatabase database;
 
     @Override
     protected void tearDown() throws Exception {
@@ -69,7 +70,7 @@ public class PerfTestSquiDB extends BasePerfTestCase {
                     IndexedStringEntity.class,
                     IndexedStringEntity.INDEXED_STRING.eq(fixedRandomStrings[nextIndex]));
         }
-        stopClock(Tools.LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         database.deleteAll(IndexedStringEntity.class);
@@ -77,20 +78,16 @@ public class PerfTestSquiDB extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
-        // set up database
-        MySquidDatabase database = new MySquidDatabase(getApplication());
-        log("Set up database.");
+    protected void onRunSetup() throws Exception {
+        super.onRunSetup();
 
         // set up database
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(database, getOneByOneCount());
-            batchCrudRun(database, getBatchSize());
-        }
+        database = new MySquidDatabase(getApplication());
+        log("Set up database.");
     }
 
-    private void oneByOneCrudRun(MySquidDatabase database, int count) throws SQLException {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));
@@ -100,7 +97,7 @@ public class PerfTestSquiDB extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             database.persistWithId(list.get(i));
         }
-        stopClock(Tools.LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         // re-set values to set entity as modified
         for (int i = 0; i < list.size(); i++) {
@@ -111,13 +108,13 @@ public class PerfTestSquiDB extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             database.persist(list.get(i));
         }
-        stopClock(Tools.LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll(database);
     }
 
-    @SuppressWarnings("unused")
-    private void batchCrudRun(MySquidDatabase database, int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));
@@ -133,7 +130,7 @@ public class PerfTestSquiDB extends BasePerfTestCase {
         } finally {
             database.endTransaction();
         }
-        stopClock(Tools.LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         // re-set values to set entity as modified
         for (int i = 0; i < list.size(); i++) {
@@ -150,7 +147,7 @@ public class PerfTestSquiDB extends BasePerfTestCase {
         } finally {
             database.endTransaction();
         }
-        stopClock(Tools.LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         List<SimpleEntityNotNull> reloaded = new ArrayList<>(count);
@@ -163,7 +160,7 @@ public class PerfTestSquiDB extends BasePerfTestCase {
             reloaded.add(entity);
         }
         query.close();
-        stopClock(Tools.LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -179,11 +176,11 @@ public class PerfTestSquiDB extends BasePerfTestCase {
             String simpleString = entity.getSimpleString();
             byte[] simpleByteArray = entity.getSimpleByteArray();
         }
-        stopClock(Tools.LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll(database);
-        stopClock(Tools.LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll(MySquidDatabase database) {

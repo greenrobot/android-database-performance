@@ -4,9 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools.LogMessage;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import nl.qbusict.cupboard.Cupboard;
@@ -22,6 +21,7 @@ public class PerfTestCupboard extends BasePerfTestCase {
     private static final int DATABASE_VERSION = 1;
 
     private Cupboard cupboard;
+    private DatabaseCompartment database;
 
     @Override
     protected void setUp() throws Exception {
@@ -83,7 +83,7 @@ public class PerfTestCupboard extends BasePerfTestCase {
                     .withSelection("indexedString = ?", fixedRandomStrings[nextIndex])
                     .list();
         }
-        stopClock(LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         database.delete(IndexedStringEntity.class, "");
@@ -91,20 +91,17 @@ public class PerfTestCupboard extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
+    protected void onRunSetup() throws Exception {
+        super.onRunSetup();
+
         // set up database
         cupboard.register(SimpleEntityNotNull.class);
         DbHelper dbHelper = new DbHelper(getApplication(), DATABASE_NAME, DATABASE_VERSION);
-        DatabaseCompartment database = cupboard.withDatabase(dbHelper.getWritableDatabase());
-
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(database, getOneByOneCount());
-            batchCrudRun(database, getBatchSize());
-        }
+        database = cupboard.withDatabase(dbHelper.getWritableDatabase());
     }
 
-    private void oneByOneCrudRun(DatabaseCompartment database, int count) throws SQLException {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));
@@ -114,19 +111,19 @@ public class PerfTestCupboard extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             database.put(list.get(i));
         }
-        stopClock(LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
             database.put(list.get(i));
         }
-        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll(database);
     }
 
-    private void batchCrudRun(DatabaseCompartment database, int count)
-            throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));
@@ -134,15 +131,15 @@ public class PerfTestCupboard extends BasePerfTestCase {
 
         startClock();
         database.put(list);
-        stopClock(LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         startClock();
         database.put(list);
-        stopClock(LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         List<SimpleEntityNotNull> reloaded = database.query(SimpleEntityNotNull.class).list();
-        stopClock(LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -158,11 +155,11 @@ public class PerfTestCupboard extends BasePerfTestCase {
             entity.getSimpleString();
             entity.getSimpleByteArray();
         }
-        stopClock(LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll(database);
-        stopClock(LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll(DatabaseCompartment database) {

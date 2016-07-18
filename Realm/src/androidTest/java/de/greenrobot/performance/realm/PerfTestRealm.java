@@ -1,14 +1,13 @@
 package de.greenrobot.performance.realm;
 
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools.LogMessage;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,7 +95,7 @@ public class PerfTestRealm extends BasePerfTestCase {
                 entity.getIndexedString();
             }
         }
-        stopClock(LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         realm.beginTransaction();
@@ -106,15 +105,7 @@ public class PerfTestRealm extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(getOneByOneCount());
-            batchCrudRun(getBatchSize());
-        }
-    }
-
-    private void oneByOneCrudRun(int count) throws SQLException {
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));
@@ -126,7 +117,7 @@ public class PerfTestRealm extends BasePerfTestCase {
             realm.copyToRealm(list.get(i));
             realm.commitTransaction();
         }
-        stopClock(LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
@@ -134,12 +125,13 @@ public class PerfTestRealm extends BasePerfTestCase {
             realm.copyToRealmOrUpdate(list.get(i));
             realm.commitTransaction();
         }
-        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll();
     }
 
-    private void batchCrudRun(int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(SimpleEntityNotNullHelper.createEntity((long) i));
@@ -149,17 +141,17 @@ public class PerfTestRealm extends BasePerfTestCase {
         realm.beginTransaction();
         realm.insert(list);
         realm.commitTransaction();
-        stopClock(LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         startClock();
         realm.beginTransaction();
         realm.insertOrUpdate(list);
         realm.commitTransaction();
-        stopClock(LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         RealmResults<SimpleEntityNotNull> reloaded = realm.where(SimpleEntityNotNull.class).findAll();
-        stopClock(LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         // as Realm is not actually loading data, just referencing it,
         // at least make sure we access every property to force it being loaded
@@ -177,11 +169,11 @@ public class PerfTestRealm extends BasePerfTestCase {
             entity.getSimpleString();
             entity.getSimpleByteArray();
         }
-        stopClock(LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll();
-        stopClock(LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll() {

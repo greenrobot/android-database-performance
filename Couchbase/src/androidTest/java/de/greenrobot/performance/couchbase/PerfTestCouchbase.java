@@ -12,8 +12,8 @@ import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools.LogMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,7 +107,7 @@ public class PerfTestCouchbase extends BasePerfTestCase {
                 Document document = row.getDocument();
             }
         }
-        stopClock(LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         deleteAll();
@@ -115,15 +115,7 @@ public class PerfTestCouchbase extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(getOneByOneCount());
-            batchCrudRun(getBatchSize());
-        }
-    }
-
-    private void oneByOneCrudRun(int count) throws CouchbaseLiteException {
+    protected void doOneByOneCrudRun(int count) throws Exception {
         // precreate property maps for documents
         List<Map<String, Object>> maps = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
@@ -138,7 +130,7 @@ public class PerfTestCouchbase extends BasePerfTestCase {
             document.putProperties(maps.get(i));
             documents.add(document);
         }
-        stopClock(LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         startClock();
         for (int i = 0; i < count; i++) {
@@ -149,12 +141,13 @@ public class PerfTestCouchbase extends BasePerfTestCase {
             updatedProperties.putAll(maps.get(i));
             document.putProperties(updatedProperties);
         }
-        stopClock(LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll();
     }
 
-    private void batchCrudRun(int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         // precreate property maps for documents
         List<Map<String, Object>> maps = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
@@ -171,7 +164,7 @@ public class PerfTestCouchbase extends BasePerfTestCase {
             documents.add(document);
         }
         database.endTransaction(true);
-        stopClock(LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         startClock();
         database.beginTransaction();
@@ -184,7 +177,7 @@ public class PerfTestCouchbase extends BasePerfTestCase {
             document.putProperties(updatedProperties);
         }
         database.endTransaction(true);
-        stopClock(LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         // clear the document cache to force loading properties from the database
         database.clearDocumentCache();
@@ -194,7 +187,7 @@ public class PerfTestCouchbase extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             reloaded.add(database.getDocument(String.valueOf(i)));
         }
-        stopClock(LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         // Couchbase is not actually loading properties when getting a document
         // so load them for each one to measure how long it takes to get to the actual data
@@ -212,11 +205,11 @@ public class PerfTestCouchbase extends BasePerfTestCase {
             properties.get("simpleString");
             properties.get("simpleByteArray");
         }
-        stopClock(LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll();
-        stopClock(LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll() throws CouchbaseLiteException {

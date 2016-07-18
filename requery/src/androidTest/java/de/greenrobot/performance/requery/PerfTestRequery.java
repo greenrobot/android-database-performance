@@ -1,8 +1,8 @@
 package de.greenrobot.performance.requery;
 
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import de.greenrobot.performance.Tools;
 import io.requery.BlockingEntityStore;
 import io.requery.android.sqlite.DatabaseSource;
 import io.requery.cache.EmptyEntityCache;
@@ -20,6 +20,7 @@ import java.util.List;
 public class PerfTestRequery extends BasePerfTestCase {
 
     private static final int DATABASE_VERSION = 1;
+    private BlockingEntityStore<Object> database;
 
     @Override
     protected void tearDown() throws Exception {
@@ -28,24 +29,24 @@ public class PerfTestRequery extends BasePerfTestCase {
         super.tearDown();
     }
 
-    @Override
-    protected void doIndexedStringEntityQueries() throws Exception {
-        // set up database
-        BlockingEntityStore<Object> data = getData();
-        log("Set up database.");
-
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            indexedStringEntityQueriesRun(data, getBatchSize());
-        }
-    }
-
-    private BlockingEntityStore<Object> getData() {
+    private void setupDatabase() {
         DatabaseSource source = new DatabaseSource(getApplication(), Models.DEFAULT,
                 DATABASE_VERSION);
         Configuration configuration = new ConfigurationBuilder(source,
                 Models.DEFAULT).setEntityCache(new EmptyEntityCache()).build();
-        return new EntityDataStore<>(configuration).toBlocking();
+        database = new EntityDataStore<>(configuration).toBlocking();
+    }
+
+    @Override
+    protected void doIndexedStringEntityQueries() throws Exception {
+        // set up database
+        setupDatabase();
+        log("Set up database.");
+
+        for (int i = 0; i < RUNS; i++) {
+            log("----Run " + (i + 1) + " of " + RUNS);
+            indexedStringEntityQueriesRun(database, getBatchSize());
+        }
     }
 
     private void indexedStringEntityQueriesRun(BlockingEntityStore<Object> database, int count) {
@@ -82,7 +83,7 @@ public class PerfTestRequery extends BasePerfTestCase {
 
             results.close();
         }
-        stopClock(Tools.LogMessage.QUERY_INDEXED);
+        stopClock(Benchmark.Type.QUERY_INDEXED);
 
         // delete all entities
         database.delete(IndexedStringEntity.class).get().value();
@@ -90,20 +91,16 @@ public class PerfTestRequery extends BasePerfTestCase {
     }
 
     @Override
-    protected void doOneByOneAndBatchCrud() throws Exception {
-        // set up database
-        BlockingEntityStore<Object> data = getData();
-        log("Set up database.");
+    protected void onRunSetup() throws Exception {
+        super.onRunSetup();
 
         // set up database
-        for (int i = 0; i < RUNS; i++) {
-            log("----Run " + (i + 1) + " of " + RUNS);
-            oneByOneCrudRun(data, getOneByOneCount());
-            batchCrudRun(data, getBatchSize());
-        }
+        setupDatabase();
+        log("Set up database.");
     }
 
-    private void oneByOneCrudRun(BlockingEntityStore<Object> database, int count) {
+    @Override
+    protected void doOneByOneCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));
@@ -113,7 +110,7 @@ public class PerfTestRequery extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             database.insert(list.get(i));
         }
-        stopClock(Tools.LogMessage.ONE_BY_ONE_CREATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
         // requery detects changes, so modify all entities before updating them
         modifyEntities(list);
@@ -122,13 +119,13 @@ public class PerfTestRequery extends BasePerfTestCase {
         for (int i = 0; i < count; i++) {
             database.update(list.get(i));
         }
-        stopClock(Tools.LogMessage.ONE_BY_ONE_UPDATE);
+        stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
         deleteAll(database);
     }
 
-    @SuppressWarnings("unused")
-    private void batchCrudRun(BlockingEntityStore<Object> database, int count) throws Exception {
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             list.add(createEntity((long) i));
@@ -136,20 +133,20 @@ public class PerfTestRequery extends BasePerfTestCase {
 
         startClock();
         database.insert(list);
-        stopClock(Tools.LogMessage.BATCH_CREATE);
+        stopClock(Benchmark.Type.BATCH_CREATE);
 
         // requery detects changes, so modify all entities before updating them
         modifyEntities(list);
 
         startClock();
         database.update(list);
-        stopClock(Tools.LogMessage.BATCH_UPDATE);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
 
         startClock();
         Result<SimpleEntityNotNull> results = database.select(SimpleEntityNotNull.class).get();
         List<SimpleEntityNotNull> reloaded = results.toList();
         results.close();
-        stopClock(Tools.LogMessage.BATCH_READ);
+        stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
@@ -165,11 +162,11 @@ public class PerfTestRequery extends BasePerfTestCase {
             String simpleString = entity.getSimpleString();
             byte[] simpleByteArray = entity.getSimpleByteArray();
         }
-        stopClock(Tools.LogMessage.BATCH_ACCESS);
+        stopClock(Benchmark.Type.BATCH_ACCESS);
 
         startClock();
         deleteAll(database);
-        stopClock(Tools.LogMessage.BATCH_DELETE);
+        stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
     private void deleteAll(BlockingEntityStore<Object> database) {
