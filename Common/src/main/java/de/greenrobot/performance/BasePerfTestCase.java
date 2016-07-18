@@ -67,7 +67,7 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
         log("--------Indexed Queries: End");
     }
 
-    public void testSingleAndBatchCrud() throws Exception {
+    public void testOneByOneCrud() throws Exception {
         //noinspection PointlessBooleanExpression
         if (!BuildConfig.RUN_PERFORMANCE_TESTS) {
             log("Performance tests are disabled.");
@@ -75,18 +75,38 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
         }
 
         onRunSetup();
-        setUpBenchmark("1by1-and-batch");
+        setUpBenchmark("1by1");
 
-        log("--------One-by-one/Batch CRUD: Start");
+        log("--------One-by-one CRUD: Start");
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
             doOneByOneCrudRun(getOneByOneCount());
+
+            benchmark.commit();
+        }
+        benchmark.logResults();
+        log("--------One-by-one CRUD: End");
+    }
+
+    public void testBatchCrud() throws Exception {
+        //noinspection PointlessBooleanExpression
+        if (!BuildConfig.RUN_PERFORMANCE_TESTS) {
+            log("Performance tests are disabled.");
+            return;
+        }
+
+        onRunSetup();
+        setUpBenchmark("batch");
+
+        log("--------Batch CRUD: Start");
+        for (int i = 0; i < RUNS; i++) {
+            log("----Run " + (i + 1) + " of " + RUNS);
             doBatchCrudRun(getBatchSize());
 
             benchmark.commit();
         }
         benchmark.logResults();
-        log("--------One-by-one/Batch CRUD: End");
+        log("--------Batch CRUD: End");
     }
 
     protected void onRunSetup() throws Exception {
