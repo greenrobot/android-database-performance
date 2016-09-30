@@ -19,13 +19,15 @@ package de.greenrobot.daotest.performance;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.test.AbstractDaoTest;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.Benchmark.Type;
 import de.greenrobot.performance.common.BuildConfig;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base test case including some helper methods when running a performance test.

@@ -17,11 +17,11 @@
  */
 package de.greenrobot.daotest.performance;
 
+import java.util.List;
+
 import de.greenrobot.daotest.SimpleEntityNotNull;
 import de.greenrobot.daotest.SimpleEntityNotNullDao;
-import de.greenrobot.daotest.entity.SimpleEntityNotNullHelper;
 import de.greenrobot.performance.Benchmark;
-import java.util.List;
 
 public class PerformanceTestNotNull extends PerformanceTest<SimpleEntityNotNullDao, SimpleEntityNotNull, Long> {
 
