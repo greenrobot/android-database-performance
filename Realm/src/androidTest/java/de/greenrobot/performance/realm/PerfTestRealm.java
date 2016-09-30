@@ -28,7 +28,8 @@ public class PerfTestRealm extends BasePerfTestCase {
     }
 
     protected void createRealm() {
-        RealmConfiguration.Builder configBuilder = new RealmConfiguration.Builder(getContext());
+        Realm.init(getContext());
+        RealmConfiguration.Builder configBuilder = new RealmConfiguration.Builder();
         if (inMemory) {
             configBuilder.name("inmemory.realm").inMemory();
         } else {
