@@ -1,6 +1,7 @@
 package de.greenrobot.performance;
 
 import android.app.Application;
+import android.os.Environment;
 import android.test.ApplicationTestCase;
 import de.greenrobot.performance.Benchmark.Type;
 import de.greenrobot.performance.common.BuildConfig;
@@ -115,10 +116,19 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
 
     private void setUpBenchmark(String runName) {
         // TODO ut: can not use ext. storage root directory as M+ requires runtime permission
-        File outputFile = new File(getContext().getExternalFilesDir(null),
+        File outputFile = new File(getDir(),
                 String.format("%s-%s.tsv", getLogTag(), runName));
         benchmark = new Benchmark(outputFile, getLogTag());
         benchmark.addFixedColumnDevice();
+    }
+
+    private File getDir() {
+        String state = Environment.getExternalStorageState();
+
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return getContext().getExternalFilesDir(null);
+        }
+        return getContext().getFilesDir();
     }
 
     /**
