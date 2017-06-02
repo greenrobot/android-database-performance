@@ -1,0 +1,30 @@
+buildscript {
+    dependencies {
+        classpath dep.androidPlugin
+    }
+}
+
+repositories {
+    maven { url 'https://maven.google.com' }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId "de.greenrobot.performance.room"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+    }
+}
+
+dependencies {
+    androidTestCompile project(':Common')
+    androidTestCompile "android.arch.persistence.room:runtime:1.0.0-alpha1"
+    androidTestAnnotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha1"
+}

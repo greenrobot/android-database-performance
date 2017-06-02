@@ -17,6 +17,8 @@
  */
 package de.greenrobot.daotest.performance;
 
+import android.os.Environment;
+
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.test.AbstractDaoTest;
 import de.greenrobot.performance.BasePerfTestCase;
@@ -97,10 +99,19 @@ public abstract class PerformanceTest<D extends AbstractDao<T, K>, T, K>
 
     private void setUpBenchmark(String runName) {
         // TODO ut: can not use ext. storage root directory as M+ requires runtime permission
-        File outputFile = new File(getContext().getExternalFilesDir(null),
+        File outputFile = new File(getDir(),
                 String.format("%s-%s.tsv", getLogTag(), runName));
         benchmark = new Benchmark(outputFile, getLogTag());
         benchmark.addFixedColumnDevice().warmUpRuns(2);
+    }
+
+    private File getDir() {
+        String state = Environment.getExternalStorageState();
+
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return getContext().getExternalFilesDir(null);
+        }
+        return getContext().getFilesDir();
     }
 
     private void oneByOneCrudRun(int count) {
