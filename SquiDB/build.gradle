@@ -1,12 +1,10 @@
 buildscript {
     dependencies {
         classpath dep.androidPlugin
-        classpath dep.aptPlugin
     }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -18,12 +16,12 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
 
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
-    }
-}
 
-apt {
-    arguments {
-        squidbOptions 'androidModels'
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ 'squidbOptions' : 'androidModels' ]
+            }
+        }
     }
 }
 
@@ -34,5 +32,5 @@ dependencies {
     compile "com.yahoo.squidb:squidb:$squidbVersion"
     compile "com.yahoo.squidb:squidb-annotations:$squidbVersion"
     compile "com.yahoo.squidb:squidb-android:$squidbVersion"
-    apt "com.yahoo.squidb:squidb-processor:$squidbVersion"
+    annotationProcessor "com.yahoo.squidb:squidb-processor:$squidbVersion"
 }

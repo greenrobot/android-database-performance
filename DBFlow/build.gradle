@@ -1,7 +1,6 @@
 buildscript {
     dependencies {
         classpath dep.androidPlugin
-        classpath dep.aptPlugin
     }
 }
 
@@ -10,7 +9,6 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -29,7 +27,7 @@ def dbflow_version = "3.1.1"
 
 dependencies {
     androidTestCompile project(':Common')
-    apt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+    annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
     compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
     compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
 }
