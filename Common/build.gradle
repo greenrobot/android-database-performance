@@ -19,5 +19,5 @@ android {
 
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'org.greenrobot:essentials:3.0.0-SNAPSHOT'
+    compile 'org.greenrobot:essentials:3.0.0-RC1'
 }
