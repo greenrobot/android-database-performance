@@ -8,6 +8,7 @@ subprojects {
             jcenter()
             mavenCentral()
             google()
+            maven { url "http://objectbox.net/beta-repo/" }
         }
     }
 
@@ -16,6 +17,7 @@ subprojects {
         mavenCentral()
         google()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url "http://objectbox.net/beta-repo/" }
     }
 }
 

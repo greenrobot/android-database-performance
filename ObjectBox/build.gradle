@@ -1,0 +1,26 @@
+buildscript {
+    dependencies {
+        classpath dep.androidPlugin
+        classpath "io.objectbox:objectbox-gradle-plugin:1.1.0"
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'io.objectbox'
+
+android {
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId "de.greenrobot.performance.objectbox"
+        minSdkVersion 15
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+}
+
+dependencies {
+    androidTestCompile project(':Common')
+}

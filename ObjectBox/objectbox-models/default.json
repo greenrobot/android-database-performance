@@ -1,0 +1,83 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:3134299104731466722",
+      "lastPropertyId": "2:831971891095608132",
+      "name": "IndexedStringEntity",
+      "properties": [
+        {
+          "id": "1:5483370523592054012",
+          "name": "id"
+        },
+        {
+          "id": "2:831971891095608132",
+          "indexId": "1:9223179604788421987",
+          "name": "indexedString"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:1175660430600334473",
+      "lastPropertyId": "10:2902306333601665605",
+      "name": "SimpleEntityNotNull",
+      "properties": [
+        {
+          "id": "1:7061915157414565958",
+          "name": "id"
+        },
+        {
+          "id": "2:5364323424594027083",
+          "name": "simpleBoolean"
+        },
+        {
+          "id": "3:2517374151803605612",
+          "name": "simpleByte"
+        },
+        {
+          "id": "4:3112900592124445830",
+          "name": "simpleShort"
+        },
+        {
+          "id": "5:8246391361060302566",
+          "name": "simpleInt"
+        },
+        {
+          "id": "6:4598213643408763999",
+          "name": "simpleLong"
+        },
+        {
+          "id": "7:2200267705132829965",
+          "name": "simpleFloat"
+        },
+        {
+          "id": "8:5355752296937208242",
+          "name": "simpleDouble"
+        },
+        {
+          "id": "9:6401648502525349740",
+          "name": "simpleString"
+        },
+        {
+          "id": "10:2902306333601665605",
+          "name": "simpleByteArray"
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "2:1175660430600334473",
+  "lastIndexId": "1:9223179604788421987",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 4,
+  "modelVersionParserMinimum": 4,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}
