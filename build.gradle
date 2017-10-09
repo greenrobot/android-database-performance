@@ -33,6 +33,6 @@ ext {
 
     dep = [
             androidPlugin: 'com.android.tools.build:gradle:2.3.3',
-            supportAnnotations: 'com.android.support:support-annotations:25.4.0'
+            supportAnnotations: 'com.android.support:support-annotations:26.1.0'
     ]
 }
