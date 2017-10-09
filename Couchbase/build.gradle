@@ -12,8 +12,7 @@ android {
 
     defaultConfig {
         applicationId 'de.greenrobot.performance.couchbase'
-        // Couchbase requires at least SDK level 9
-        minSdkVersion 9
+        minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
