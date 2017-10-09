@@ -17,6 +17,12 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    lintOptions {
+        // some Room classes are restricted to internal use within library
+        // but are used in generated code, ignore warning
+        disable 'RestrictedApi'
+    }
 }
 
 dependencies {

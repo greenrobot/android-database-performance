@@ -15,6 +15,12 @@ android {
 
         buildConfigField "boolean", "RUN_PERFORMANCE_TESTS", "true"
     }
+
+    lintOptions {
+        // caused by JUnit referencing non-Android class, caused by including testing libs as
+        // compile instead of androidTestCompile (so we can share test code with other modules)
+        disable 'InvalidPackage'
+    }
 }
 
 dependencies {
