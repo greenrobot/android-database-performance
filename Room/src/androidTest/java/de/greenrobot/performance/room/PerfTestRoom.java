@@ -54,6 +54,47 @@ public class PerfTestRoom extends BasePerfTestCase {
         deleteAll();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Override
+    protected void doBatchCrudRun(int count) throws Exception {
+        final List<SimpleEntityNotNull> list = new ArrayList<>();
+        for (long i = 0; i < count; i++) {
+            list.add(createSimpleEntityNotNull(i));
+        }
+
+        startClock();
+        simpleEntityNotNullDao.insert(list);
+        stopClock(Benchmark.Type.BATCH_CREATE);
+
+        startClock();
+        simpleEntityNotNullDao.update(list);
+        stopClock(Benchmark.Type.BATCH_UPDATE);
+
+        startClock();
+        List<SimpleEntityNotNull> reloaded = simpleEntityNotNullDao.getAll();
+        stopClock(Benchmark.Type.BATCH_READ);
+
+        startClock();
+        for (int i = 0; i < reloaded.size(); i++) {
+            SimpleEntityNotNull entity = reloaded.get(i);
+            entity.getId();
+            entity.getSimpleBoolean();
+            entity.getSimpleByte();
+            entity.getSimpleShort();
+            entity.getSimpleInt();
+            entity.getSimpleLong();
+            entity.getSimpleFloat();
+            entity.getSimpleDouble();
+            entity.getSimpleString();
+            entity.getSimpleByteArray();
+        }
+        stopClock(Benchmark.Type.BATCH_ACCESS);
+
+        startClock();
+        deleteAll();
+        stopClock(Benchmark.Type.BATCH_DELETE);
+    }
+
     private void deleteAll() {
         simpleEntityNotNullDao.deleteAll();
     }
