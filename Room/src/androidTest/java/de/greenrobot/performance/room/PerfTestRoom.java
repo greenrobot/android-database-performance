@@ -7,6 +7,7 @@ import java.util.List;
 
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
+import de.greenrobot.performance.StringGenerator;
 
 /**
  * https://developer.android.com/topic/libraries/architecture/room.html
@@ -95,8 +96,51 @@ public class PerfTestRoom extends BasePerfTestCase {
         stopClock(Benchmark.Type.BATCH_DELETE);
     }
 
-    private void deleteAll() {
-        simpleEntityNotNullDao.deleteAll();
+    @Override
+    protected void doIndexedStringEntityQueries() throws Exception {
+        for (int i = 0; i < RUNS; i++) {
+            log("----Run " + (i + 1) + " of " + RUNS);
+            indexedStringEntityQueriesRun(getBatchSize());
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void indexedStringEntityQueriesRun(int count) {
+        // create entities
+        List<IndexedStringEntity> entities = new ArrayList<>(count);
+        String[] fixedRandomStrings = StringGenerator.createFixedRandomStrings(count);
+        for (int i = 0; i < count; i++) {
+            IndexedStringEntity entity = new IndexedStringEntity();
+            entity.setId((long) i);
+            entity.setIndexedString(fixedRandomStrings[i]);
+            entities.add(entity);
+        }
+        log("Built entities.");
+
+        // insert entities
+        indexedStringEntityDao.insert(entities);
+        log("Inserted entities.");
+
+        // query for entities by indexed string at random
+        int[] randomIndices = StringGenerator.getFixedRandomIndices(getQueryCount(), count - 1);
+
+        startClock();
+        for (int i = 0; i < getQueryCount(); i++) {
+            int nextIndex = randomIndices[i];
+
+            List<IndexedStringEntity> result = indexedStringEntityDao
+                    .withIndexedString(fixedRandomStrings[nextIndex]);
+            for (int j = 0, resultSize = result.size(); j < resultSize; j++) {
+                IndexedStringEntity entity = result.get(j);
+                entity.getId();
+                entity.getIndexedString();
+            }
+        }
+        stopClock(Benchmark.Type.QUERY_INDEXED);
+
+        // delete all entities
+        indexedStringEntityDao.deleteAll();
+        log("Deleted all entities.");
     }
 
     private static SimpleEntityNotNull createSimpleEntityNotNull(Long key) {
@@ -116,5 +160,9 @@ public class PerfTestRoom extends BasePerfTestCase {
         byte[] bytes = {42, -17, 23, 0, 127, -128};
         entity.setSimpleByteArray(bytes);
         return entity;
+    }
+
+    private void deleteAll() {
+        simpleEntityNotNullDao.deleteAll();
     }
 }
