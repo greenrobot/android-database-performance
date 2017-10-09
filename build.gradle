@@ -7,15 +7,15 @@ subprojects {
         repositories {
             jcenter()
             mavenCentral()
+            google()
         }
     }
 
     repositories {
         jcenter()
         mavenCentral()
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots'
-        }
+        google()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
 }
 
@@ -28,10 +28,11 @@ ext {
     buildToolsVersion = '26.0.1'
     compileSdkVersion = 26
 
-    minSdkVersion = 8
+    minSdkVersion = 9
     targetSdkVersion = 19
 
     dep = [
-            androidPlugin: 'com.android.tools.build:gradle:2.3.3'
+            androidPlugin: 'com.android.tools.build:gradle:2.3.3',
+            supportAnnotations: 'com.android.support:support-annotations:25.4.0'
     ]
 }
