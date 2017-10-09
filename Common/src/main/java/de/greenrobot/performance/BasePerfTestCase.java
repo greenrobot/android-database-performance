@@ -66,8 +66,8 @@ public abstract class BasePerfTestCase {
             return;
         }
 
-        onRunSetup();
         setUpBenchmark("indexed-query");
+        onRunSetup();
 
         log("--------Indexed Queries: Start");
         doIndexedStringEntityQueries();
@@ -83,8 +83,8 @@ public abstract class BasePerfTestCase {
             return;
         }
 
-        onRunSetup();
         setUpBenchmark("1by1");
+        onRunSetup();
 
         log("--------One-by-one CRUD: Start");
         for (int i = 0; i < RUNS; i++) {
@@ -105,8 +105,8 @@ public abstract class BasePerfTestCase {
             return;
         }
 
-        onRunSetup();
         setUpBenchmark("batch");
+        onRunSetup();
 
         log("--------Batch CRUD: Start");
         for (int i = 0; i < RUNS; i++) {
