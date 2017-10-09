@@ -1,8 +1,9 @@
 package de.greenrobot.performance.sqlite;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.squareup.sqldelight.SqlDelightStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,8 @@ import java.util.List;
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
+import de.greenrobot.performance.sqlite.IndexedStringEntityModel.InsertRow;
+import de.greenrobot.performance.sqlite.SimpleEntityNotNullModel.UpdateRow;
 
 /**
  * https://github.com/square/sqldelight
@@ -39,23 +42,17 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
     }
 
     private void indexedStringEntityQueriesRun(SQLiteDatabase database, int count) {
-        // create entities
-        List<ContentValues> entities = new ArrayList<>(count);
+        // create strings
         String[] fixedRandomStrings = StringGenerator.createFixedRandomStrings(count);
-        for (int i = 0; i < count; i++) {
-            ContentValues entity = IndexedStringEntity.FACTORY.marshal()
-                    ._id((long) i)
-                    .indexed_string(fixedRandomStrings[i])
-                    .asContentValues();
-            entities.add(entity);
-        }
+        InsertRow insert = new InsertRow(database);
         log("Built entities.");
 
         // insert entities
         database.beginTransaction();
         try {
             for (int i = 0; i < count; i++) {
-                database.insert(IndexedStringEntity.TABLE_NAME, null, entities.get(i));
+                insert.bind((long) i, fixedRandomStrings[i]);
+                insert.program.executeInsert();
             }
             database.setTransactionSuccessful();
         } finally {
@@ -70,16 +67,17 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
         for (int i = 0; i < getQueryCount(); i++) {
             int nextIndex = randomIndices[i];
 
-            Cursor query = database.rawQuery(IndexedStringEntity.WITH_STRING,
-                    new String[] { fixedRandomStrings[nextIndex] });
+            SqlDelightStatement query = IndexedStringEntity.FACTORY
+                    .with_string(fixedRandomStrings[nextIndex]);
+            Cursor cursor = database.rawQuery(query.statement, query.args);
             // do NO null checks and count checks, should throw to indicate something is incorrect
-            query.moveToFirst();
+            cursor.moveToFirst();
 
             // reconstruct entity
             //noinspection unused
-            IndexedStringEntity entity = IndexedStringEntity.MAPPER.map(query);
+            IndexedStringEntity entity = IndexedStringEntity.MAPPER.map(cursor);
 
-            query.close();
+            cursor.close();
         }
         stopClock(Benchmark.Type.QUERY_INDEXED);
 
@@ -100,23 +98,48 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
 
     @Override
     protected void doOneByOneCrudRun(int count) throws Exception {
-        final List<ContentValues> list = new ArrayList<>();
+        final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            list.add(createEntity((long) i));
+            list.add(createSimpleEntityNotNull((long) i));
         }
 
+        SimpleEntityNotNullModel.InsertRow insert = new SimpleEntityNotNull.InsertRow(database);
         startClock();
         for (int i = 0; i < count; i++) {
-            database.insert(SimpleEntityNotNull.TABLE_NAME, null, list.get(i));
+            SimpleEntityNotNull entity = list.get(i);
+            insert.bind(
+                    entity._id(),
+                    entity.simple_boolean(),
+                    entity.simple_byte(),
+                    entity.simple_short(),
+                    entity.simple_int(),
+                    entity.simple_long(),
+                    entity.simple_float(),
+                    entity.simple_double(),
+                    entity.simple_string(),
+                    entity.simple_byte_array()
+            );
+            insert.program.executeInsert();
         }
         stopClock(Benchmark.Type.ONE_BY_ONE_CREATE);
 
+        UpdateRow update = new UpdateRow(database);
         startClock();
         for (int i = 0; i < count; i++) {
-            ContentValues entity = list.get(i);
-            database.update(SimpleEntityNotNull.TABLE_NAME, entity,
-                    SimpleEntityNotNull._ID + "=" + entity.getAsLong(SimpleEntityNotNull._ID),
-                    null);
+            SimpleEntityNotNull entity = list.get(i);
+            update.bind(
+                    entity.simple_boolean(),
+                    entity.simple_byte(),
+                    entity.simple_short(),
+                    entity.simple_int(),
+                    entity.simple_long(),
+                    entity.simple_float(),
+                    entity.simple_double(),
+                    entity.simple_string(),
+                    entity.simple_byte_array(),
+                    entity._id()
+            );
+            update.program.executeUpdateDelete();
         }
         stopClock(Benchmark.Type.ONE_BY_ONE_UPDATE);
 
@@ -125,16 +148,30 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
 
     @Override
     protected void doBatchCrudRun(int count) throws Exception {
-        final List<ContentValues> list = new ArrayList<>();
+        final List<SimpleEntityNotNull> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            list.add(createEntity((long) i));
+            list.add(createSimpleEntityNotNull((long) i));
         }
 
+        SimpleEntityNotNullModel.InsertRow insert = new SimpleEntityNotNull.InsertRow(database);
         startClock();
         database.beginTransaction();
         try {
             for (int i = 0; i < count; i++) {
-                database.insert(SimpleEntityNotNull.TABLE_NAME, null, list.get(i));
+                SimpleEntityNotNull entity = list.get(i);
+                insert.bind(
+                        entity._id(),
+                        entity.simple_boolean(),
+                        entity.simple_byte(),
+                        entity.simple_short(),
+                        entity.simple_int(),
+                        entity.simple_long(),
+                        entity.simple_float(),
+                        entity.simple_double(),
+                        entity.simple_string(),
+                        entity.simple_byte_array()
+                );
+                insert.program.executeInsert();
             }
             database.setTransactionSuccessful();
         } finally {
@@ -142,14 +179,25 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
         }
         stopClock(Benchmark.Type.BATCH_CREATE);
 
+        UpdateRow update = new UpdateRow(database);
         startClock();
         database.beginTransaction();
         try {
             for (int i = 0; i < count; i++) {
-                ContentValues entity = list.get(i);
-                database.update(SimpleEntityNotNull.TABLE_NAME, entity,
-                        SimpleEntityNotNull._ID + "=" + entity.getAsLong(SimpleEntityNotNull._ID),
-                        null);
+                SimpleEntityNotNull entity = list.get(i);
+                update.bind(
+                        entity.simple_boolean(),
+                        entity.simple_byte(),
+                        entity.simple_short(),
+                        entity.simple_int(),
+                        entity.simple_long(),
+                        entity.simple_float(),
+                        entity.simple_double(),
+                        entity.simple_string(),
+                        entity.simple_byte_array(),
+                        entity._id()
+                );
+                update.program.executeUpdateDelete();
             }
             database.setTransactionSuccessful();
         } finally {
@@ -160,11 +208,12 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
         startClock();
         List<SimpleEntityNotNull> reloaded = new ArrayList<>(count);
 
-        Cursor query = database.rawQuery(SimpleEntityNotNull.SELECT_ALL, new String[0]);
-        while (query.moveToNext()) {
-            reloaded.add(SimpleEntityNotNull.MAPPER.map(query));
+        SqlDelightStatement query = SimpleEntityNotNull.FACTORY.select_all();
+        Cursor cursor = database.rawQuery(query.statement, query.args);
+        while (cursor.moveToNext()) {
+            reloaded.add(SimpleEntityNotNull.MAPPER.map(cursor));
         }
-        query.close();
+        cursor.close();
         stopClock(Benchmark.Type.BATCH_READ);
 
         startClock();
@@ -192,20 +241,20 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
         database.delete(SimpleEntityNotNull.TABLE_NAME, null, null);
     }
 
-    protected static ContentValues createEntity(long id) {
-        byte[] bytes = { 42, -17, 23, 0, 127, -128 };
-        return SimpleEntityNotNull.FACTORY.marshal()
-                ._id(id)
-                .simple_boolean(true)
-                .simple_byte(Byte.MAX_VALUE)
-                .simple_short(Short.MAX_VALUE)
-                .simple_int(Integer.MAX_VALUE)
-                .simple_long(Long.MAX_VALUE)
-                .simple_float(Float.MAX_VALUE)
-                .simple_double(Double.MAX_VALUE)
-                .simple_string("greenrobot greenDAO")
-                .simple_byte_array(bytes)
-                .asContentValues();
+    private SimpleEntityNotNull createSimpleEntityNotNull(long id) {
+        byte[] bytes = {42, -17, 23, 0, 127, -128};
+        return SimpleEntityNotNull.FACTORY.creator.create(
+                id,
+                true,
+                Byte.MAX_VALUE,
+                Short.MAX_VALUE,
+                Integer.MAX_VALUE,
+                Long.MAX_VALUE,
+                Float.MAX_VALUE,
+                Double.MAX_VALUE,
+                "greenrobot greenDAO",
+                bytes
+        );
     }
 
 }

@@ -9,3 +9,7 @@ with_string:
 SELECT *
 FROM indexed_string_entity
 WHERE indexed_string = ?;
+
+insertRow:
+INSERT INTO indexed_string_entity
+VALUES (?, ?);

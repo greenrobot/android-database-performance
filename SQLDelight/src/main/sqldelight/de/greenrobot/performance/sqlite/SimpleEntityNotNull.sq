@@ -16,3 +16,14 @@ CREATE TABLE simple_entity_not_null (
 select_all:
 SELECT *
 FROM simple_entity_not_null;
+
+insertRow:
+INSERT INTO simple_entity_not_null
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateRow:
+UPDATE simple_entity_not_null
+SET simple_boolean = ?, simple_byte = ?, simple_short = ?,
+simple_int = ?, simple_long = ?, simple_float = ?,
+simple_double = ?, simple_string = ?, simple_byte_array = ?
+WHERE _id = ?;
