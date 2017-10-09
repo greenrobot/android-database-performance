@@ -1,5 +1,9 @@
 package de.greenrobot.performance.realm;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
@@ -7,9 +11,6 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * https://realm.io/docs/java/latest/ https://github.com/realm/realm-java/
@@ -21,14 +22,14 @@ public class PerfTestRealm extends BasePerfTestCase {
     private Realm realm;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         createRealm();
     }
 
     protected void createRealm() {
-        Realm.init(getContext());
+        Realm.init(getTargetContext());
         RealmConfiguration.Builder configBuilder = new RealmConfiguration.Builder();
         if (inMemory) {
             configBuilder.name("inmemory.realm").inMemory();
@@ -39,7 +40,7 @@ public class PerfTestRealm extends BasePerfTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (realm != null) {
             String path = realm.getPath();
 

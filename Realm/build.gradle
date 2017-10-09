@@ -17,7 +17,7 @@ android {
         minSdkVersion 11
         targetSdkVersion rootProject.ext.targetSdkVersion
 
-        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 }
 

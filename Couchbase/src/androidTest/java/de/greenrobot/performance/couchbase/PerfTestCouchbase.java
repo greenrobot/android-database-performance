@@ -11,14 +11,16 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
-import de.greenrobot.performance.BasePerfTestCase;
-import de.greenrobot.performance.Benchmark;
-import de.greenrobot.performance.StringGenerator;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
+import de.greenrobot.performance.StringGenerator;
 
 /**
  * http://developer.couchbase.com/documentation/mobile/1.1.0/develop/training/build-first-android-app/index.html
@@ -32,20 +34,20 @@ public class PerfTestCouchbase extends BasePerfTestCase {
     private Database database;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         setupCouchbase();
     }
 
     private void setupCouchbase() throws CouchbaseLiteException, IOException {
-        Manager manager = new Manager(new AndroidContext(getApplication()),
+        Manager manager = new Manager(new AndroidContext(getTargetContext()),
                 Manager.DEFAULT_OPTIONS);
         database = manager.getDatabase(DB_NAME);
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         database.delete();
         database = null;
 

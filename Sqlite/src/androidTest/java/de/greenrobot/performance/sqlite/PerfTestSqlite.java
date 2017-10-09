@@ -5,11 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * https://bitbucket.org/qbusict/cupboard/wiki/GettingStarted
@@ -21,8 +23,8 @@ public class PerfTestSqlite extends BasePerfTestCase {
     private SQLiteDatabase database;
 
     @Override
-    protected void tearDown() throws Exception {
-        getApplication().deleteDatabase(DATABASE_NAME);
+    public void tearDown() throws Exception {
+        getTargetContext().deleteDatabase(DATABASE_NAME);
 
         super.tearDown();
     }
@@ -30,7 +32,7 @@ public class PerfTestSqlite extends BasePerfTestCase {
     @Override
     protected void doIndexedStringEntityQueries() throws Exception {
         // set up database
-        DbHelper dbHelper = new DbHelper(getApplication(), DATABASE_NAME, DATABASE_VERSION);
+        DbHelper dbHelper = new DbHelper(getTargetContext(), DATABASE_NAME, DATABASE_VERSION);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         log("Set up database.");
 
@@ -103,7 +105,7 @@ public class PerfTestSqlite extends BasePerfTestCase {
         super.onRunSetup();
 
         // set up database
-        DbHelper dbHelper = new DbHelper(getApplication(), DATABASE_NAME, DATABASE_VERSION);
+        DbHelper dbHelper = new DbHelper(getTargetContext(), DATABASE_NAME, DATABASE_VERSION);
         database = dbHelper.getWritableDatabase();
     }
 

@@ -6,11 +6,13 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * https://parse.com/docs/android/guide
@@ -27,18 +29,18 @@ public class PerfTestParse extends BasePerfTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        getContext().deleteDatabase("ParseOfflineStore");
+    public void tearDown() throws Exception {
+        getTargetContext().deleteDatabase("ParseOfflineStore");
 
         super.tearDown();
     }
 
     private void setupParse() {
         // Enable Local Datastore.
-        Parse.enableLocalDatastore(getContext());
+        Parse.enableLocalDatastore(getTargetContext());
 
         // Add your initialization code here
-        Parse.initialize(getContext(), "X9MEmCvnlX9oGRLmVhunkatw33jlF7wMPZZFw8lZ",
+        Parse.initialize(getTargetContext(), "X9MEmCvnlX9oGRLmVhunkatw33jlF7wMPZZFw8lZ",
                 "FKI8s0UnK6nT6PdGVO2XgKlcsPZnGJlI8qoPpUKa");
 
         ParseUser.enableAutomaticUser();

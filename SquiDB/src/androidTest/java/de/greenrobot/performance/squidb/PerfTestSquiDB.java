@@ -2,11 +2,13 @@ package de.greenrobot.performance.squidb;
 
 import com.yahoo.squidb.data.SquidCursor;
 import com.yahoo.squidb.sql.Query;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * https://github.com/yahoo/squidb/wiki
@@ -16,8 +18,8 @@ public class PerfTestSquiDB extends BasePerfTestCase {
     private MySquidDatabase database;
 
     @Override
-    protected void tearDown() throws Exception {
-        getApplication().deleteDatabase(MySquidDatabase.DATABASE_NAME);
+    public void tearDown() throws Exception {
+        getTargetContext().deleteDatabase(MySquidDatabase.DATABASE_NAME);
 
         super.tearDown();
     }
@@ -25,7 +27,7 @@ public class PerfTestSquiDB extends BasePerfTestCase {
     @Override
     protected void doIndexedStringEntityQueries() throws Exception {
         // set up database
-        MySquidDatabase database = new MySquidDatabase(getApplication());
+        MySquidDatabase database = new MySquidDatabase(getTargetContext());
         log("Set up database.");
 
         for (int i = 0; i < RUNS; i++) {
@@ -82,7 +84,7 @@ public class PerfTestSquiDB extends BasePerfTestCase {
         super.onRunSetup();
 
         // set up database
-        database = new MySquidDatabase(getApplication());
+        database = new MySquidDatabase(getTargetContext());
         log("Set up database.");
     }
 

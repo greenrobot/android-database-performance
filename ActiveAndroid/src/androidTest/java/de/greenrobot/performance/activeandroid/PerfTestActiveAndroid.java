@@ -4,11 +4,13 @@ import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
 import com.activeandroid.query.Select;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Note: looks like development has ceased. Last commit on 2014-10-07.
@@ -20,11 +22,11 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
     private static final String DATABASE_NAME = "active-android.db";
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (Cache.isInitialized()) {
             ActiveAndroid.dispose();
         }
-        getApplication().deleteDatabase(DATABASE_NAME);
+        getTargetContext().deleteDatabase(DATABASE_NAME);
 
         super.tearDown();
     }
@@ -32,7 +34,7 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
     @Override
     protected void doIndexedStringEntityQueries() throws Exception {
         // set up database
-        Configuration dbConfiguration = new Configuration.Builder(getContext())
+        Configuration dbConfiguration = new Configuration.Builder(getTargetContext())
                 .setDatabaseName(DATABASE_NAME)
                 .addModelClass(IndexedStringEntity.class)
                 .create();
@@ -93,7 +95,7 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
         super.onRunSetup();
 
         // set up database
-        Configuration dbConfiguration = new Configuration.Builder(getContext())
+        Configuration dbConfiguration = new Configuration.Builder(getTargetContext())
                 .setDatabaseName(DATABASE_NAME)
                 .addModelClass(SimpleEntityNotNull.class)
                 .create();

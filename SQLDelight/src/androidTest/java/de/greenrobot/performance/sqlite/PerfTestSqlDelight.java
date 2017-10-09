@@ -3,11 +3,13 @@ package de.greenrobot.performance.sqlite;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * https://github.com/square/sqldelight
@@ -17,8 +19,8 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
     private SQLiteDatabase database;
 
     @Override
-    protected void tearDown() throws Exception {
-        getApplication().deleteDatabase(SqlDelightDbHelper.DATABASE_NAME);
+    public void tearDown() throws Exception {
+        getTargetContext().deleteDatabase(SqlDelightDbHelper.DATABASE_NAME);
 
         super.tearDown();
     }
@@ -26,7 +28,7 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
     @Override
     protected void doIndexedStringEntityQueries() throws Exception {
         // set up database
-        SqlDelightDbHelper dbHelper = new SqlDelightDbHelper(getApplication());
+        SqlDelightDbHelper dbHelper = new SqlDelightDbHelper(getTargetContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         log("Set up database.");
 
@@ -91,7 +93,7 @@ public class PerfTestSqlDelight extends BasePerfTestCase {
         super.onRunSetup();
 
         // set up database
-        SqlDelightDbHelper dbHelper = new SqlDelightDbHelper(getApplication());
+        SqlDelightDbHelper dbHelper = new SqlDelightDbHelper(getTargetContext());
         database = dbHelper.getWritableDatabase();
         log("Set up database.");
     }

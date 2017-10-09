@@ -12,12 +12,12 @@ import com.raizlabs.android.dbflow.structure.ModelAdapter;
 import com.raizlabs.android.dbflow.structure.database.transaction.FastStoreModelTransaction;
 import com.raizlabs.android.dbflow.structure.database.transaction.ITransaction;
 
-import de.greenrobot.performance.Benchmark;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
 
 /**
@@ -26,16 +26,16 @@ import de.greenrobot.performance.StringGenerator;
 public class PerfTestDbFlow extends BasePerfTestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
-        FlowManager.init(new FlowConfig.Builder(getApplication()).build());
+        FlowManager.init(new FlowConfig.Builder(getTargetContext()).build());
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         FlowManager.destroy();
-        getApplication().deleteDatabase(FlowDatabase.NAME + ".db");
+        getTargetContext().deleteDatabase(FlowDatabase.NAME + ".db");
 
         super.tearDown();
     }

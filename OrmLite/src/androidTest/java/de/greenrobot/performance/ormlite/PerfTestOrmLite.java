@@ -1,13 +1,20 @@
 package de.greenrobot.performance.ormlite;
 
 import com.j256.ormlite.dao.Dao;
-import de.greenrobot.performance.BasePerfTestCase;
-import de.greenrobot.performance.Benchmark;
-import de.greenrobot.performance.StringGenerator;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+
+import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
+import de.greenrobot.performance.StringGenerator;
+
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 
 /**
  * http://ormlite.com/sqlite_java_android_orm.shtml https://github.com/j256/ormlite-examples
@@ -19,7 +26,7 @@ public class PerfTestOrmLite extends BasePerfTestCase {
     private Dao<SimpleEntityNotNull, Long> dao;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         setUpOrmLite();
@@ -31,15 +38,15 @@ public class PerfTestOrmLite extends BasePerfTestCase {
             name = null;
         } else {
             name = "test-db";
-            getApplication().deleteDatabase(name);
+            getTargetContext().deleteDatabase(name);
         }
-        dbHelper = new DbHelper(getApplication(), name);
+        dbHelper = new DbHelper(getTargetContext(), name);
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (!inMemory) {
-            getApplication().deleteDatabase("test-db");
+            getTargetContext().deleteDatabase("test-db");
         }
 
         super.tearDown();

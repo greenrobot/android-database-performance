@@ -16,7 +16,7 @@ android {
         minSdkVersion 9
         targetSdkVersion rootProject.ext.targetSdkVersion
 
-        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     packagingOptions {

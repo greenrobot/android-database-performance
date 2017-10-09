@@ -3,11 +3,13 @@ package de.greenrobot.performance.cupboard;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
-import java.util.ArrayList;
-import java.util.List;
 import nl.qbusict.cupboard.Cupboard;
 import nl.qbusict.cupboard.CupboardBuilder;
 import nl.qbusict.cupboard.DatabaseCompartment;
@@ -24,7 +26,7 @@ public class PerfTestCupboard extends BasePerfTestCase {
     private DatabaseCompartment database;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         setUpCupboard();
@@ -35,8 +37,8 @@ public class PerfTestCupboard extends BasePerfTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        getApplication().deleteDatabase(DATABASE_NAME);
+    public void tearDown() throws Exception {
+        getTargetContext().deleteDatabase(DATABASE_NAME);
 
         super.tearDown();
     }
@@ -45,7 +47,7 @@ public class PerfTestCupboard extends BasePerfTestCase {
     protected void doIndexedStringEntityQueries() {
         // set up database
         cupboard.register(IndexedStringEntity.class);
-        DbHelper dbHelper = new DbHelper(getApplication(), DATABASE_NAME, DATABASE_VERSION);
+        DbHelper dbHelper = new DbHelper(getTargetContext(), DATABASE_NAME, DATABASE_VERSION);
         DatabaseCompartment database = cupboard.withDatabase(dbHelper.getWritableDatabase());
         log("Set up database.");
 
@@ -96,7 +98,7 @@ public class PerfTestCupboard extends BasePerfTestCase {
 
         // set up database
         cupboard.register(SimpleEntityNotNull.class);
-        DbHelper dbHelper = new DbHelper(getApplication(), DATABASE_NAME, DATABASE_VERSION);
+        DbHelper dbHelper = new DbHelper(getTargetContext(), DATABASE_NAME, DATABASE_VERSION);
         database = cupboard.withDatabase(dbHelper.getWritableDatabase());
     }
 

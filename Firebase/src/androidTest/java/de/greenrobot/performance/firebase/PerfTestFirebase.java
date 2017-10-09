@@ -6,13 +6,15 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
-import de.greenrobot.performance.BasePerfTestCase;
-import de.greenrobot.performance.Benchmark;
-import de.greenrobot.performance.StringGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import de.greenrobot.performance.BasePerfTestCase;
+import de.greenrobot.performance.Benchmark;
+import de.greenrobot.performance.StringGenerator;
 
 /**
  * Make sure to run the performance tests while in AIRPLANE MODE, as
@@ -39,7 +41,7 @@ public class PerfTestFirebase extends BasePerfTestCase {
     }
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         setupFirebase();
@@ -50,18 +52,18 @@ public class PerfTestFirebase extends BasePerfTestCase {
         if (!Firebase.getDefaultConfig().isFrozen()) {
             Firebase.getDefaultConfig().setPersistenceEnabled(true);
         }
-        Firebase.setAndroidContext(getApplication());
+        Firebase.setAndroidContext(getTargetContext());
         Firebase.goOffline();
 
         rootFirebaseRef = new Firebase("https://luminous-inferno-2264.firebaseio.com");
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         rootFirebaseRef.getApp().purgeOutstandingWrites();
         rootFirebaseRef.removeValue();
 
-        getApplication().deleteDatabase("luminous-inferno-2264.firebaseio.com_default");
+        getTargetContext().deleteDatabase("luminous-inferno-2264.firebaseio.com_default");
 
         super.tearDown();
     }

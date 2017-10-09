@@ -1,18 +1,24 @@
 package de.greenrobot.performance;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.File;
+
 import de.greenrobot.performance.Benchmark.Type;
 import de.greenrobot.performance.common.BuildConfig;
-import java.io.File;
 
 /**
  * Base test case including some helper methods when running a performance test.
- *
- * <p/><b>Note:</b> To run a single test, create a new "Android Tests" run configuration in Android
- * Studio. Right-click to run for Android Tests currently does not work in abstract classes.
  */
-public abstract class BasePerfTestCase extends ApplicationTestCase<Application> {
+@RunWith(AndroidJUnit4.class)
+public abstract class BasePerfTestCase {
 
     public static final int DEFAULT_BATCH_SIZE = 10000;
     public static final int ONE_BY_ONE_MODIFIER = 10;
@@ -20,10 +26,6 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
     public static final int RUNS = 8;
 
     private Benchmark benchmark;
-
-    public BasePerfTestCase() {
-        super(Application.class);
-    }
 
     protected int getBatchSize() {
         return DEFAULT_BATCH_SIZE;
@@ -44,13 +46,19 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
         return getClass().getSimpleName();
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        createApplication();
+    @Before
+    public void setUp() throws Exception {
     }
 
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    protected Context getTargetContext() {
+        return InstrumentationRegistry.getTargetContext();
+    }
+
+    @Test
     public void testIndexedStringEntityQueries() throws Exception {
         //noinspection PointlessBooleanExpression
         if (!BuildConfig.RUN_PERFORMANCE_TESTS) {
@@ -67,6 +75,7 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
         log("--------Indexed Queries: End");
     }
 
+    @Test
     public void testOneByOneCrud() throws Exception {
         //noinspection PointlessBooleanExpression
         if (!BuildConfig.RUN_PERFORMANCE_TESTS) {
@@ -88,6 +97,7 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
         log("--------One-by-one CRUD: End");
     }
 
+    @Test
     public void testBatchCrud() throws Exception {
         //noinspection PointlessBooleanExpression
         if (!BuildConfig.RUN_PERFORMANCE_TESTS) {
@@ -115,7 +125,7 @@ public abstract class BasePerfTestCase extends ApplicationTestCase<Application> 
 
     private void setUpBenchmark(String runName) {
         // TODO ut: can not use ext. storage root directory as M+ requires runtime permission
-        File outputFile = new File(getContext().getExternalFilesDir(null),
+        File outputFile = new File(getTargetContext().getExternalFilesDir(null),
                 String.format("%s-%s.tsv", getLogTag(), runName));
         benchmark = new Benchmark(outputFile, getLogTag());
         benchmark.addFixedColumnDevice();

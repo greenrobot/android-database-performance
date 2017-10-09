@@ -1,5 +1,8 @@
 package de.greenrobot.performance.requery;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.performance.BasePerfTestCase;
 import de.greenrobot.performance.Benchmark;
 import de.greenrobot.performance.StringGenerator;
@@ -11,9 +14,6 @@ import io.requery.sql.Configuration;
 import io.requery.sql.ConfigurationBuilder;
 import io.requery.sql.EntityDataStore;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * https://github.com/requery/requery
  */
@@ -23,14 +23,14 @@ public class PerfTestRequery extends BasePerfTestCase {
     private BlockingEntityStore<Object> database;
 
     @Override
-    protected void tearDown() throws Exception {
-        getApplication().deleteDatabase(Models.DEFAULT.getName());
+    public void tearDown() throws Exception {
+        getTargetContext().deleteDatabase(Models.DEFAULT.getName());
 
         super.tearDown();
     }
 
     private void setupDatabase() {
-        DatabaseSource source = new DatabaseSource(getApplication(), Models.DEFAULT,
+        DatabaseSource source = new DatabaseSource(getTargetContext(), Models.DEFAULT,
                 DATABASE_VERSION);
         Configuration configuration = new ConfigurationBuilder(source,
                 Models.DEFAULT).setEntityCache(new EmptyEntityCache()).build();
