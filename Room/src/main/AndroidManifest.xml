@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    package="de.greenrobot.performance.room">
+
+    <application tools:ignore="AllowBackup,GoogleAppIndexingWarning,MissingApplicationIcon">
+        <!-- empty application tag -->
+    </application>
+
+</manifest>
