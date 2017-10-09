@@ -124,6 +124,7 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
         deleteAll();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();

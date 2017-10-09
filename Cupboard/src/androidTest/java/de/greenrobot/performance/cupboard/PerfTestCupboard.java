@@ -124,6 +124,7 @@ public class PerfTestCupboard extends BasePerfTestCase {
         deleteAll(database);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
