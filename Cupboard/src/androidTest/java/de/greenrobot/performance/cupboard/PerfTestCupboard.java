@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import org.junit.After;
+import org.junit.Before;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,39 +28,30 @@ public class PerfTestCupboard extends BasePerfTestCase {
     private Cupboard cupboard;
     private DatabaseCompartment database;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        setUpCupboard();
-    }
-
-    private void setUpCupboard() {
+    @Before
+    public void setUp() {
         cupboard = new CupboardBuilder().useAnnotations().build();
+        // set up database
+        cupboard.register(IndexedStringEntity.class);
+        cupboard.register(SimpleEntityNotNull.class);
+        DbHelper dbHelper = new DbHelper(getTargetContext(), DATABASE_NAME, DATABASE_VERSION);
+        database = cupboard.withDatabase(dbHelper.getWritableDatabase());
     }
 
-    @Override
-    public void tearDown() throws Exception {
+    @After
+    public void cleanUp() throws Exception {
         getTargetContext().deleteDatabase(DATABASE_NAME);
-
-        super.tearDown();
     }
 
     @Override
     protected void doIndexedStringEntityQueries() {
-        // set up database
-        cupboard.register(IndexedStringEntity.class);
-        DbHelper dbHelper = new DbHelper(getTargetContext(), DATABASE_NAME, DATABASE_VERSION);
-        DatabaseCompartment database = cupboard.withDatabase(dbHelper.getWritableDatabase());
-        log("Set up database.");
-
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            indexedStringEntityQueriesRun(database, getBatchSize());
+            indexedStringEntityQueriesRun(getBatchSize());
         }
     }
 
-    private void indexedStringEntityQueriesRun(DatabaseCompartment database, int count) {
+    private void indexedStringEntityQueriesRun(int count) {
         // create entities
         List<IndexedStringEntity> entities = new ArrayList<>(count);
         String[] fixedRandomStrings = StringGenerator.createFixedRandomStrings(count);
@@ -90,16 +84,6 @@ public class PerfTestCupboard extends BasePerfTestCase {
         // delete all entities
         database.delete(IndexedStringEntity.class, "");
         log("Deleted all entities.");
-    }
-
-    @Override
-    protected void onRunSetup() throws Exception {
-        super.onRunSetup();
-
-        // set up database
-        cupboard.register(SimpleEntityNotNull.class);
-        DbHelper dbHelper = new DbHelper(getTargetContext(), DATABASE_NAME, DATABASE_VERSION);
-        database = cupboard.withDatabase(dbHelper.getWritableDatabase());
     }
 
     @Override
