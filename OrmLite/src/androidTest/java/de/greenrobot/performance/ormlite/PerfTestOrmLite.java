@@ -2,6 +2,9 @@ package de.greenrobot.performance.ormlite;
 
 import com.j256.ormlite.dao.Dao;
 
+import org.junit.After;
+import org.junit.Before;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,51 +24,39 @@ import static org.junit.Assert.assertNotSame;
  */
 public class PerfTestOrmLite extends BasePerfTestCase {
 
-    private boolean inMemory = false;
+    private final static boolean IN_MEMORY = false;
+
     private DbHelper dbHelper;
     private Dao<SimpleEntityNotNull, Long> dao;
+    private Dao<IndexedStringEntity, Long> daoIndexed;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        setUpOrmLite();
-    }
-
-    protected void setUpOrmLite() {
+    @Before
+    public void setUp() throws SQLException {
         String name;
-        if (inMemory) {
+        if (IN_MEMORY) {
             name = null;
         } else {
             name = "test-db";
-            getTargetContext().deleteDatabase(name);
         }
         dbHelper = new DbHelper(getTargetContext(), name);
+        dao = dbHelper.getDao(SimpleEntityNotNull.class);
+        daoIndexed = dbHelper.getDao(IndexedStringEntity.class);
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        if (!inMemory) {
-            getTargetContext().deleteDatabase("test-db");
-        }
-
-        super.tearDown();
+    @After
+    public void cleanUp() {
+        getTargetContext().deleteDatabase("test-db");
     }
 
     @Override
     protected void doIndexedStringEntityQueries() throws Exception {
-        // set up data access
-        final Dao<IndexedStringEntity, Long> dao = dbHelper.getDao(IndexedStringEntity.class);
-        log("Set up data access.");
-
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
-            indexedStringEntityQueriesRun(dao, getBatchSize());
+            indexedStringEntityQueriesRun(getBatchSize());
         }
     }
 
-    private void indexedStringEntityQueriesRun(final Dao<IndexedStringEntity, Long> dao, int count)
-            throws Exception {
+    private void indexedStringEntityQueriesRun(int count) throws Exception {
         // create entities
         final List<IndexedStringEntity> entities = new ArrayList<>(count);
         String[] fixedRandomStrings = StringGenerator.createFixedRandomStrings(count);
@@ -78,11 +69,11 @@ public class PerfTestOrmLite extends BasePerfTestCase {
         log("Built entities.");
 
         // insert entities
-        dao.callBatchTasks(new Callable<Void>() {
+        daoIndexed.callBatchTasks(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
                 for (IndexedStringEntity entity : entities) {
-                    dao.create(entity);
+                    daoIndexed.create(entity);
                 }
                 return null;
             }
@@ -96,7 +87,7 @@ public class PerfTestOrmLite extends BasePerfTestCase {
         for (int i = 0; i < getQueryCount(); i++) {
             int nextIndex = randomIndices[i];
             //noinspection unused
-            List<IndexedStringEntity> query = dao.queryBuilder()
+            List<IndexedStringEntity> query = daoIndexed.queryBuilder()
                     .where()
                     .eq("INDEXED_STRING", fixedRandomStrings[nextIndex])
                     .query();
@@ -107,13 +98,6 @@ public class PerfTestOrmLite extends BasePerfTestCase {
         // delete all entities
         dbHelper.getWritableDatabase().execSQL("DELETE FROM INDEXED_STRING_ENTITY");
         log("Deleted all entities.");
-    }
-
-    @Override
-    protected void onRunSetup() throws Exception {
-        super.onRunSetup();
-
-        dao = dbHelper.getDao(SimpleEntityNotNull.class);
     }
 
     @Override
