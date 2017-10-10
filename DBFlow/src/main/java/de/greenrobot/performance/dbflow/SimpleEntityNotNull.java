@@ -12,24 +12,64 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 @Table(database = FlowDatabase.class)
 public class SimpleEntityNotNull extends BaseModel {
 
-    @PrimaryKey(autoincrement = false)
-    public long _id;
+    @PrimaryKey
+    long _id;
     @Column
-    public boolean simpleBoolean;
+    boolean simpleBoolean;
     @Column
-    public byte simpleByte;
+    byte simpleByte;
     @Column
-    public short simpleShort;
+    short simpleShort;
     @Column
-    public int simpleInt;
+    int simpleInt;
     @Column
-    public long simpleLong;
+    long simpleLong;
     @Column
-    public float simpleFloat;
+    float simpleFloat;
     @Column
-    public double simpleDouble;
+    double simpleDouble;
     @Column
-    public String simpleString;
+    String simpleString;
     @Column
-    public Blob simpleByteArray;
+    Blob simpleByteArray;
+
+    public long get_id() {
+        return _id;
+    }
+
+    public boolean isSimpleBoolean() {
+        return simpleBoolean;
+    }
+
+    public byte getSimpleByte() {
+        return simpleByte;
+    }
+
+    public short getSimpleShort() {
+        return simpleShort;
+    }
+
+    public int getSimpleInt() {
+        return simpleInt;
+    }
+
+    public long getSimpleLong() {
+        return simpleLong;
+    }
+
+    public float getSimpleFloat() {
+        return simpleFloat;
+    }
+
+    public double getSimpleDouble() {
+        return simpleDouble;
+    }
+
+    public String getSimpleString() {
+        return simpleString;
+    }
+
+    public Blob getSimpleByteArray() {
+        return simpleByteArray;
+    }
 }

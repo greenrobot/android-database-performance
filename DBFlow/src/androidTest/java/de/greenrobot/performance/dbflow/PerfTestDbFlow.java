@@ -2,6 +2,7 @@ package de.greenrobot.performance.dbflow;
 
 import android.support.annotation.NonNull;
 
+import com.raizlabs.android.dbflow.config.DatabaseConfig;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.data.Blob;
@@ -11,6 +12,9 @@ import com.raizlabs.android.dbflow.structure.Model;
 import com.raizlabs.android.dbflow.structure.ModelAdapter;
 import com.raizlabs.android.dbflow.structure.database.transaction.FastStoreModelTransaction;
 import com.raizlabs.android.dbflow.structure.database.transaction.ITransaction;
+
+import org.junit.After;
+import org.junit.Before;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,19 +29,23 @@ import de.greenrobot.performance.StringGenerator;
  */
 public class PerfTestDbFlow extends BasePerfTestCase {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    private static final String DATABASE_NAME = "flowdb";
+    private static final String DATABASE_EXTENSION = ".db";
 
-        FlowManager.init(new FlowConfig.Builder(getTargetContext()).build());
+    @Before
+    public void setUp() {
+        FlowManager.init(new FlowConfig.Builder(getTargetContext())
+                .addDatabaseConfig(DatabaseConfig.builder(FlowDatabase.class)
+                        .databaseName(DATABASE_NAME)
+                        .extensionName(DATABASE_EXTENSION)
+                        .build())
+                .build());
     }
 
-    @Override
-    public void tearDown() throws Exception {
+    @After
+    public void cleanUp() {
         FlowManager.destroy();
-        getTargetContext().deleteDatabase(FlowDatabase.NAME + ".db");
-
-        super.tearDown();
+        getTargetContext().deleteDatabase(DATABASE_NAME + DATABASE_EXTENSION);
     }
 
     @Override
@@ -120,6 +128,7 @@ public class PerfTestDbFlow extends BasePerfTestCase {
         deleteAll();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     protected void doBatchCrudRun(int count) throws Exception {
         final List<SimpleEntityNotNull> list = new ArrayList<>();
@@ -144,16 +153,16 @@ public class PerfTestDbFlow extends BasePerfTestCase {
         startClock();
         for (int i = 0; i < reloaded.size(); i++) {
             SimpleEntityNotNull entity = reloaded.get(i);
-            long id = entity._id;
-            boolean simpleBoolean = entity.simpleBoolean;
-            byte simpleByte = entity.simpleByte;
-            short simpleShort = entity.simpleShort;
-            int simpleInt = entity.simpleInt;
-            long simpleLong = entity.simpleLong;
-            float simpleFloat = entity.simpleFloat;
-            double simpleDouble = entity.simpleDouble;
-            String simpleString = entity.simpleString;
-            byte[] blob = entity.simpleByteArray.getBlob();
+            entity.get_id();
+            entity.isSimpleBoolean();
+            entity.getSimpleByte();
+            entity.getSimpleShort();
+            entity.getSimpleInt();
+            entity.getSimpleLong();
+            entity.getSimpleFloat();
+            entity.getSimpleDouble();
+            entity.getSimpleString();
+            entity.getSimpleByteArray().getBlob();
         }
         stopClock(Benchmark.Type.BATCH_ACCESS);
 
