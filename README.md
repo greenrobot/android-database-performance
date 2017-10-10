@@ -6,13 +6,15 @@ This project evaluates Android databases and related persistence solutions. It t
 
 ## Usage
 
-To run the Android instrumentation tests make sure to set `RUN_PERFORMANCE_TESTS` in [`Common\build.gradle`][1] to `true` (disabled by default so travis does not have to run them).
+To run the Android instrumentation tests make sure to set `RUN_PERFORMANCE_TESTS` in [`Common\build.gradle`][1] to `true`.
 
-To run with Android Studio, create a new `Android Tests` run configuration. Specify the desired `PerfTest<x>` class and a test method (see [`BasePerfTestCase`][2]).
+To run with Android Studio, create a new `Android Instrumented Tests` run configuration. Specify the desired `PerfTest<x>` class and a test method (see [`BasePerfTestCase`][2]).
 
 
 More Open Source by greenrobot
 ==============================
+[__ObjectBox__](https://github.com/objectbox/objectbox-java) is a new and fast object-oriented database for mobile devices.
+
 [__greenDAO__](https://github.com/greenrobot/greenDAO) is an ORM optimized for Android: it maps database tables to Java objects and uses code generation for optimal speed.
 
 [__EventBus__](https://github.com/greenrobot/EventBus) is a central publish/subscribe bus for Android with optional delivery threads, priorities, and sticky events. A great tool to decouple components (e.g. Activities, Fragments, logic components) from each other.
