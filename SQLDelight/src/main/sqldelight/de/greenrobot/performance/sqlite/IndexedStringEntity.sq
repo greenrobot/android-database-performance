@@ -1,4 +1,4 @@
--- table, column and method names have to be lower case
+-- table and column names have to be lower case
 -- supported types: https://github.com/square/sqldelight#types
 CREATE TABLE indexed_string_entity (
   _id INTEGER NOT NULL PRIMARY KEY,
