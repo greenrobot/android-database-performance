@@ -12,10 +12,10 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 @Table(database = FlowDatabase.class)
 public class IndexedStringEntity extends BaseModel {
 
-    @PrimaryKey(autoincrement = false)
-    public long _id;
+    @PrimaryKey
+    long _id;
 
     @Column @Index
-    public String indexedString;
+    String indexedString;
 
 }

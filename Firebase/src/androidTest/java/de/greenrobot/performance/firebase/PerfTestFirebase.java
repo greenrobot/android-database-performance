@@ -7,6 +7,9 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 
+import org.junit.After;
+import org.junit.Before;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -40,14 +43,8 @@ public class PerfTestFirebase extends BasePerfTestCase {
         return 100;
     }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        setupFirebase();
-    }
-
-    private void setupFirebase() {
+    @Before
+    public void setUp() {
         // handle multiple tests calling setup
         if (!Firebase.getDefaultConfig().isFrozen()) {
             Firebase.getDefaultConfig().setPersistenceEnabled(true);
@@ -56,16 +53,15 @@ public class PerfTestFirebase extends BasePerfTestCase {
         Firebase.goOffline();
 
         rootFirebaseRef = new Firebase("https://luminous-inferno-2264.firebaseio.com");
+        simpleEntityRef = rootFirebaseRef.child("simpleEntities");
     }
 
-    @Override
-    public void tearDown() throws Exception {
+    @After
+    public void cleanUp() {
         rootFirebaseRef.getApp().purgeOutstandingWrites();
         rootFirebaseRef.removeValue();
 
         getTargetContext().deleteDatabase("luminous-inferno-2264.firebaseio.com_default");
-
-        super.tearDown();
     }
 
     @Override
@@ -147,12 +143,6 @@ public class PerfTestFirebase extends BasePerfTestCase {
         // delete all entities
         entityRef.setValue(null);
         log("Deleted all entities.");
-    }
-
-    @Override
-    protected void onRunSetup() throws Exception {
-        // set up node for entities
-        simpleEntityRef = rootFirebaseRef.child("simpleEntities");
     }
 
     @Override

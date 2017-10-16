@@ -5,6 +5,9 @@ import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
 import com.activeandroid.query.Select;
 
+import org.junit.After;
+import org.junit.Before;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,26 +24,27 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
 
     private static final String DATABASE_NAME = "active-android.db";
 
-    @Override
-    public void tearDown() throws Exception {
-        if (Cache.isInitialized()) {
-            ActiveAndroid.dispose();
-        }
-        getTargetContext().deleteDatabase(DATABASE_NAME);
-
-        super.tearDown();
-    }
-
-    @Override
-    protected void doIndexedStringEntityQueries() throws Exception {
+    @Before
+    public void setUp() {
         // set up database
         Configuration dbConfiguration = new Configuration.Builder(getTargetContext())
                 .setDatabaseName(DATABASE_NAME)
                 .addModelClass(IndexedStringEntity.class)
+                .addModelClass(SimpleEntityNotNull.class)
                 .create();
         ActiveAndroid.initialize(dbConfiguration);
-        log("Set up database.");
+    }
 
+    @After
+    public void cleanUp() throws Exception {
+        if (Cache.isInitialized()) {
+            ActiveAndroid.dispose();
+        }
+        getTargetContext().deleteDatabase(DATABASE_NAME);
+    }
+
+    @Override
+    protected void doIndexedStringEntityQueries() throws Exception {
         for (int i = 0; i < RUNS; i++) {
             log("----Run " + (i + 1) + " of " + RUNS);
             indexedStringEntityQueriesRun(getBatchSize());
@@ -88,18 +92,6 @@ public class PerfTestActiveAndroid extends BasePerfTestCase {
         // delete all entities
         ActiveAndroid.execSQL("DELETE FROM INDEXED_STRING_ENTITY");
         log("Deleted all entities.");
-    }
-
-    @Override
-    protected void onRunSetup() throws Exception {
-        super.onRunSetup();
-
-        // set up database
-        Configuration dbConfiguration = new Configuration.Builder(getTargetContext())
-                .setDatabaseName(DATABASE_NAME)
-                .addModelClass(SimpleEntityNotNull.class)
-                .create();
-        ActiveAndroid.initialize(dbConfiguration);
     }
 
     @Override
