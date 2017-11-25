@@ -1,0 +1,32 @@
+buildscript {
+    dependencies {
+        classpath dep.androidPlugin
+    }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId "de.greenrobot.performance.kripton"
+        minSdkVersion rootProject.ext.targetSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    lintOptions {
+        // some Room classes are restricted to internal use within library
+        // but are used in generated code, ignore warning
+        disable 'RestrictedApi'
+    }
+}
+
+dependencies {
+    androidTestCompile project(':Common')
+    compile "com.abubusoft:kripton-android-library:3.0.1"
+    annotationProcessor "com.abubusoft:kripton-processor:3.0.1"
+}
