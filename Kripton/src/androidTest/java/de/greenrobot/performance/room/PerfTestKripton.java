@@ -121,6 +121,7 @@ public class PerfTestKripton extends BasePerfTestCase {
             entity.getSimpleBoolean();
             entity.getSimpleByte();
             entity.getSimpleShort();
+
             entity.getSimpleInt();
             entity.getSimpleLong();
             entity.getSimpleFloat();

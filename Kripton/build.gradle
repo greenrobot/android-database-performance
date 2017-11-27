@@ -27,6 +27,6 @@ android {
 
 dependencies {
     androidTestCompile project(':Common')
-    compile "com.abubusoft:kripton-android-library:3.0.1"
-    annotationProcessor "com.abubusoft:kripton-processor:3.0.1"
+    compile "com.abubusoft:kripton-android-library:3.0.2"
+    annotationProcessor "com.abubusoft:kripton-processor:3.0.2"
 }
