@@ -26,12 +26,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:28.0.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:+', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    androidTestCompile project(path: ':Common')
-    compile 'com.github.satyan:sugar:1.5'
+    androidTestImplementation project(path: ':Common')
+    implementation 'com.github.satyan:sugar:1.5'
 }
