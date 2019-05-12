@@ -1,4 +1,4 @@
-include ':Common'
+include ':Common', ':SugarORM'
 include ':ActiveAndroid'
 include ':Couchbase'
 include ':Cupboard'

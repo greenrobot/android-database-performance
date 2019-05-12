@@ -9,6 +9,10 @@ subprojects {
             mavenCentral()
             google()
         }
+
+        dependencies {
+            classpath 'com.android.tools.build:gradle:3.4.0'
+        }
     }
 
     repositories {
@@ -19,7 +23,7 @@ subprojects {
     }
 }
 
-task wrapper(type: Wrapper) {
+wrapper {
     gradleVersion = '4.1'
     distributionType = org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
 }
