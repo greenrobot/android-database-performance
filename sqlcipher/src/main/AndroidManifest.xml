@@ -1,0 +1,6 @@
+<manifest package="de.greenrobot.performance.sqlcipher">
+
+    <application>
+        <!-- empty application tag -->
+    </application>
+</manifest>
