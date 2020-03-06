@@ -25,14 +25,14 @@ task wrapper(type: Wrapper) {
 }
 
 ext {
-    buildToolsVersion = '26.0.1'
+    buildToolsVersion = '26.0.2'
     compileSdkVersion = 26
 
     minSdkVersion = 9
     targetSdkVersion = 19
 
     dep = [
-            androidPlugin: 'com.android.tools.build:gradle:2.3.3',
+            androidPlugin: 'com.android.tools.build:gradle:3.0.0',
             supportAnnotations: 'com.android.support:support-annotations:26.1.0'
     ]
 }
