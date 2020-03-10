@@ -7,7 +7,6 @@ buildscript {
 apply plugin: 'com.android.library'
 
 android {
-    buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {

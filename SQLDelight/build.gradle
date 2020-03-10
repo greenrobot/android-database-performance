@@ -9,7 +9,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.squareup.sqldelight'
 
 android {
-    buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
