@@ -19,20 +19,18 @@ subprojects {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
-    distributionType = org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 ext {
-    buildToolsVersion = '26.0.1'
     compileSdkVersion = 26
 
     minSdkVersion = 9
     targetSdkVersion = 19
 
     dep = [
-            androidPlugin: 'com.android.tools.build:gradle:2.3.3',
+            androidPlugin: 'com.android.tools.build:gradle:3.6.1',
             supportAnnotations: 'com.android.support:support-annotations:26.1.0'
     ]
 }

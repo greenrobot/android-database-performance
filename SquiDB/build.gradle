@@ -7,7 +7,6 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
-    buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -28,9 +27,9 @@ android {
 def squidbVersion = '3.0.0'
 
 dependencies {
-    androidTestCompile project(':Common')
-    compile "com.yahoo.squidb:squidb:$squidbVersion"
-    compile "com.yahoo.squidb:squidb-annotations:$squidbVersion"
-    compile "com.yahoo.squidb:squidb-android:$squidbVersion"
+    androidTestImplementation project(':Common')
+    implementation "com.yahoo.squidb:squidb:$squidbVersion"
+    implementation "com.yahoo.squidb:squidb-annotations:$squidbVersion"
+    implementation "com.yahoo.squidb:squidb-android:$squidbVersion"
     annotationProcessor "com.yahoo.squidb:squidb-processor:$squidbVersion"
 }

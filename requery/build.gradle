@@ -7,7 +7,6 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
-    buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -26,8 +25,8 @@ android {
 def requeryVersion = '1.0.0-rc1'
 
 dependencies {
-    androidTestCompile project(':Common')
-    compile "io.requery:requery:${requeryVersion}"
-    compile "io.requery:requery-android:${requeryVersion}"
+    androidTestImplementation project(':Common')
+    implementation "io.requery:requery:${requeryVersion}"
+    implementation "io.requery:requery-android:${requeryVersion}"
     annotationProcessor "io.requery:requery-processor:${requeryVersion}"
 }

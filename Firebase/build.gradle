@@ -7,7 +7,6 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
-    buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -26,6 +25,6 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':Common')
-    androidTestCompile 'com.firebase:firebase-client-android:2.5.2'
+    androidTestImplementation project(':Common')
+    androidTestImplementation 'com.firebase:firebase-client-android:2.5.2'
 }

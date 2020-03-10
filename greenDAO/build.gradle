@@ -9,7 +9,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
 android {
-    buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -23,9 +22,9 @@ android {
 }
 
 dependencies {
-    compile 'org.greenrobot:greendao:3.2.2'
+    implementation 'org.greenrobot:greendao:3.2.2'
 
-    androidTestCompile project(':Common')
+    androidTestImplementation project(':Common')
 }
 
 greendao {

@@ -9,8 +9,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.squareup.sqldelight'
 
 android {
-    buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
         applicationId 'de.greenrobot.performance.sqldelight'
@@ -22,10 +26,9 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':Common')
-    compile dep.supportAnnotations
-    provided 'com.google.auto.value:auto-value:1.5.1'
-    provided 'javax.annotation:jsr250-api:1.0'
-
-    annotationProcessor 'com.google.auto.value:auto-value:1.5.1'
+    androidTestImplementation project(':Common')
+    implementation dep.supportAnnotations
+    api 'com.google.auto.value:auto-value-annotations:1.7'
+    annotationProcessor 'com.google.auto.value:auto-value:1.7'
+    api 'javax.annotation:jsr250-api:1.0'
 }
