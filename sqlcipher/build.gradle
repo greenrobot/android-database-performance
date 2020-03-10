@@ -1,0 +1,26 @@
+buildscript {
+    dependencies {
+        classpath dep.androidPlugin
+    }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId 'de.greenrobot.performance.sqlcipher'
+        minSdkVersion 16
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+}
+
+dependencies {
+    implementation 'net.zetetic:android-database-sqlcipher:4.3.0@aar'
+    implementation "androidx.sqlite:sqlite:2.0.1"
+
+    androidTestImplementation project(':Common')
+}
