@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':Common')
-    compile 'com.parse:parse-android:1.13.1'
+    androidTestImplementation project(':Common')
+    implementation 'com.parse:parse-android:1.13.1'
 }
 

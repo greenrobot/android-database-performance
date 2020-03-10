@@ -19,5 +19,5 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':Common')
+    androidTestImplementation project(':Common')
 }

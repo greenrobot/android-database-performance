@@ -19,6 +19,6 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':Common')
-    androidTestCompile 'com.j256.ormlite:ormlite-android:4.48'
+    androidTestImplementation project(':Common')
+    androidTestImplementation 'com.j256.ormlite:ormlite-android:4.48'
 }

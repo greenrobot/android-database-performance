@@ -19,6 +19,6 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':Common')
-    androidTestCompile 'nl.qbusict:cupboard:2.1.4'
+    androidTestImplementation project(':Common')
+    androidTestImplementation 'nl.qbusict:cupboard:2.1.4'
 }

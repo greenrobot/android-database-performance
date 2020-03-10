@@ -23,11 +23,11 @@ android {
 }
 
 dependencies {
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'org.greenrobot:essentials:3.0.0-RC1'
+    api 'org.apache.commons:commons-lang3:3.4'
+    api 'org.greenrobot:essentials:3.0.0-RC1'
 
     // AndroidJUnitRunner and JUnit Rules
-    compile 'com.android.support.test:runner:1.0.1'
-    compile 'com.android.support.test:rules:1.0.1'
-    compile dep.supportAnnotations
+    api 'com.android.support.test:runner:1.0.1'
+    api 'com.android.support.test:rules:1.0.1'
+    api dep.supportAnnotations
 }

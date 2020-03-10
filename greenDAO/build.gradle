@@ -22,9 +22,9 @@ android {
 }
 
 dependencies {
-    compile 'org.greenrobot:greendao:3.2.2'
+    implementation 'org.greenrobot:greendao:3.2.2'
 
-    androidTestCompile project(':Common')
+    androidTestImplementation project(':Common')
 }
 
 greendao {

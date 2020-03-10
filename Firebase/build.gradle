@@ -25,6 +25,6 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':Common')
-    androidTestCompile 'com.firebase:firebase-client-android:2.5.2'
+    androidTestImplementation project(':Common')
+    androidTestImplementation 'com.firebase:firebase-client-android:2.5.2'
 }

@@ -25,6 +25,6 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':Common')
-    androidTestCompile 'com.couchbase.lite:couchbase-lite-android:1.1.0'
+    androidTestImplementation project(':Common')
+    androidTestImplementation 'com.couchbase.lite:couchbase-lite-android:1.1.0'
 }

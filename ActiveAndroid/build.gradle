@@ -23,7 +23,7 @@ android {
 }
 
 dependencies {
-    androidTestCompile project(':Common')
-    androidTestCompile 'com.android.support:support-v4:23.0.1'
-    androidTestCompile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
+    androidTestImplementation project(':Common')
+    androidTestImplementation 'com.android.support:support-v4:23.0.1'
+    androidTestImplementation 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
 }
