@@ -1,3 +1,5 @@
+ℹ **Check out our new [performance test app that includes ObjectBox](https://github.com/objectbox/objectbox-performance).**
+
 Android Database Performance Benchmark
 ======================================
 This project evaluates Android databases and related persistence solutions. It tests SQLite, SQLite in combination with several ORMs, and alternative database options.
